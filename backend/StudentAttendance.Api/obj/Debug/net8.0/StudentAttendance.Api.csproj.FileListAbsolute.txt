@@ -25,3 +25,4 @@ c:\Users\Admin\OneDrive\Desktop\StudentAttendance\backend\StudentAttendance.Api\
 c:\Users\Admin\OneDrive\Desktop\StudentAttendance\backend\StudentAttendance.Api\obj\Debug\net8.0\StudentAttendance.Api.pdb
 c:\Users\Admin\OneDrive\Desktop\StudentAttendance\backend\StudentAttendance.Api\obj\Debug\net8.0\StudentAttendance.Api.genruntimeconfig.cache
 c:\Users\Admin\OneDrive\Desktop\StudentAttendance\backend\StudentAttendance.Api\obj\Debug\net8.0\ref\StudentAttendance.Api.dll
+C:\Users\Admin\OneDrive\Desktop\StudentAttendance\backend\StudentAttendance.Api\obj\Debug\net8.0\StudentAttendance.Api.sourcelink.json

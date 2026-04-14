@@ -11,14 +11,6 @@ public record RegisterRequest(
 
 public record LoginRequest(string Email, string Password);
 
-public record UpdateProfileRequest(
-    string FullName,
-    string YearLevel,
-    string Course,
-    string Email,
-    string MobileNumber,
-    string Address);
-
 public record CreateAttendanceRequest(
     string UserId,
     string StudentName,
@@ -39,16 +31,6 @@ public record AuthResponse(
     string Course,
     string Email);
 
-public record UserProfileResponse(
-    string UserId,
-    string FullName,
-    string StudentId,
-    string YearLevel,
-    string Course,
-    string Email,
-    string MobileNumber,
-    string Address);
-
 public record AttendanceResponse(
     string Id,
     string UserId,
@@ -64,23 +46,6 @@ public record AttendanceResponse(
     string Status,
     string CreatedAtUtc);
 
-public record RecentAttendanceResponse(
-    string Subject,
-    string Date,
-    string TimeIn,
-    string Section,
-    string Status);
-
-public record SubjectRateResponse(string Subject, int Rate);
-
-public record DashboardResponse(
-    int AttendanceRate,
-    int ClassesToday,
-    int LateThisMonth,
-    int PresentStreak,
-    List<RecentAttendanceResponse> RecentRecords,
-    List<SubjectRateResponse> SubjectRates);
-
 internal sealed class UserEntity
 {
     public string Id { get; set; } = string.Empty;
@@ -89,9 +54,7 @@ internal sealed class UserEntity
     public string YearLevel { get; set; } = string.Empty;
     public string Course { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
-    public string PasswordHash { get; set; } = string.Empty;
-    public string MobileNumber { get; set; } = string.Empty;
-    public string Address { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
     public string CreatedAtUtc { get; set; } = string.Empty;
 }
 

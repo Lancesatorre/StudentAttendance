@@ -1,106 +1,99 @@
-using System.Text.Json;
 using Microsoft.Extensions.FileProviders;
 using StudentAttendance.Api;
 using StudentAttendance.Api.Services;
 
+// Create web application builder.
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.ConfigureHttpJsonOptions(options =>
+// Allow frontend requests from any origin for this beginner project.
+builder.Services.AddCors(corsOptions =>
 {
-    options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-    options.SerializerOptions.WriteIndented = true;
-});
-
-builder.Services.AddCors(options =>
-{
-    options.AddDefaultPolicy(policy =>
+    corsOptions.AddDefaultPolicy(policyBuilder =>
     {
-        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+        policyBuilder.AllowAnyOrigin();
+        policyBuilder.AllowAnyHeader();
+        policyBuilder.AllowAnyMethod();
     });
 });
 
+// Use one shared JSON data store service.
 builder.Services.AddSingleton<JsonDataStore>();
 
+// Build the app.
 var app = builder.Build();
 
+// Enable CORS middleware.
 app.UseCors();
 
-var staticRootPath = Path.GetFullPath(Path.Combine(app.Environment.ContentRootPath, "..", ".."));
-var staticProvider = new PhysicalFileProvider(staticRootPath);
-var frontendProvider = new PhysicalFileProvider(Path.Combine(staticRootPath, "Frontend"));
+// Locate project root and Frontend folder.
+var projectRootPath = Path.GetFullPath(Path.Combine(app.Environment.ContentRootPath, "..", ".."));
+var frontendPath = Path.Combine(projectRootPath, "Frontend");
 
-app.UseDefaultFiles(new DefaultFilesOptions
-{
-    FileProvider = frontendProvider,
-    RequestPath = string.Empty
-});
+var rootFilesProvider = new PhysicalFileProvider(projectRootPath);
+var frontendFilesProvider = new PhysicalFileProvider(frontendPath);
 
+// Serve static files from project root.
 app.UseStaticFiles(new StaticFileOptions
 {
-    FileProvider = staticProvider,
-    RequestPath = string.Empty
+    FileProvider = rootFilesProvider
 });
 
+// Serve static files from Frontend folder.
 app.UseStaticFiles(new StaticFileOptions
 {
-    FileProvider = frontendProvider,
-    RequestPath = string.Empty
+    FileProvider = frontendFilesProvider
 });
 
+// Open home page when visiting root URL.
 app.MapGet("/", () => Results.Redirect("/index.html"));
 
-app.MapPost("/api/auth/register", async (RegisterRequest request, JsonDataStore store) =>
+// Register endpoint.
+app.MapPost("/api/register", (RegisterRequest request, JsonDataStore store) =>
 {
-    var result = await store.RegisterAsync(request);
-    return result.Success
-        ? Results.Ok(result.User)
-        : Results.BadRequest(new { message = result.Error });
+    var registerResult = store.Register(request);
+    if (!registerResult.Success)
+    {
+        return Results.BadRequest(new { message = registerResult.Error });
+    }
+
+    return Results.Ok(registerResult.User);
 });
 
-app.MapPost("/api/auth/login", async (LoginRequest request, JsonDataStore store) =>
+// Login endpoint.
+app.MapPost("/api/login", (LoginRequest request, JsonDataStore store) =>
 {
-    var result = await store.LoginAsync(request);
-    return result.Success
-        ? Results.Ok(result.User)
-        : Results.BadRequest(new { message = result.Error });
+    var loginResult = store.Login(request);
+    if (!loginResult.Success)
+    {
+        return Results.BadRequest(new { message = loginResult.Error });
+    }
+
+    return Results.Ok(loginResult.User);
 });
 
-app.MapGet("/api/users/{userId}", async (string userId, JsonDataStore store) =>
+// Create attendance endpoint.
+app.MapPost("/api/attendance", (CreateAttendanceRequest request, JsonDataStore store) =>
 {
-    var user = await store.GetUserAsync(userId);
-    return user is null
-        ? Results.NotFound(new { message = "User was not found." })
-        : Results.Ok(user);
+    var createAttendanceResult = store.AddAttendance(request);
+    if (!createAttendanceResult.Success)
+    {
+        return Results.BadRequest(new { message = createAttendanceResult.Error });
+    }
+
+    return Results.Ok(createAttendanceResult.Record);
 });
 
-app.MapPut("/api/users/{userId}", async (string userId, UpdateProfileRequest request, JsonDataStore store) =>
+// Get attendance records by user ID.
+app.MapGet("/api/attendance", (string userId, JsonDataStore store) =>
 {
-    var result = await store.UpdateUserAsync(userId, request);
-    return result.Success
-        ? Results.Ok(result.User)
-        : Results.BadRequest(new { message = result.Error });
+    if (string.IsNullOrWhiteSpace(userId))
+    {
+        return Results.BadRequest(new { message = "Query parameter userId is required." });
+    }
+
+    var attendanceRecords = store.GetAttendance(userId);
+    return Results.Ok(attendanceRecords);
 });
 
-app.MapPost("/api/attendance", async (CreateAttendanceRequest request, JsonDataStore store) =>
-{
-    var result = await store.AddAttendanceAsync(request);
-    return result.Success
-        ? Results.Ok(result.Record)
-        : Results.BadRequest(new { message = result.Error });
-});
-
-app.MapGet("/api/attendance", async (string userId, JsonDataStore store) =>
-{
-    var records = await store.GetAttendanceAsync(userId);
-    return Results.Ok(records);
-});
-
-app.MapGet("/api/dashboard/{userId}", async (string userId, JsonDataStore store) =>
-{
-    var dashboard = await store.GetDashboardAsync(userId);
-    return dashboard is null
-        ? Results.NotFound(new { message = "User was not found." })
-        : Results.Ok(dashboard);
-});
-
+// Start the API server.
 app.Run();

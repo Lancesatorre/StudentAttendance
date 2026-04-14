@@ -1,6 +1,3 @@
-using System.Globalization;
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.Json;
 
 namespace StudentAttendance.Api.Services;
@@ -13,333 +10,199 @@ public sealed class JsonDataStore
         WriteIndented = true
     };
 
-    private readonly SemaphoreSlim _syncLock = new(1, 1);
-    private readonly string _storageFilePath;
+    private readonly object _fileLock = new();
+    private readonly string _jsonFilePath;
 
+    // Set up the Data folder and storage.json file path.
     public JsonDataStore(IWebHostEnvironment environment)
     {
         var dataDirectory = Path.Combine(environment.ContentRootPath, "Data");
         Directory.CreateDirectory(dataDirectory);
 
-        _storageFilePath = Path.Combine(dataDirectory, "storage.json");
-        EnsureStorageFileExists();
+        _jsonFilePath = Path.Combine(dataDirectory, "storage.json");
+        CreateJsonFileIfMissing();
     }
 
-    public async Task<(bool Success, string Error, AuthResponse? User)> RegisterAsync(RegisterRequest request)
+    // Register a new student account.
+    // Example: FullName="Ana Cruz", StudentId="2026-0001", Course="BSIT", Email="ana@mail.com".
+    public (bool Success, string Error, AuthResponse? User) Register(RegisterRequest request)
     {
-        var fullName = request.FullName.Trim();
-        var studentId = request.StudentId.Trim();
-        var yearLevel = request.YearLevel.Trim();
-        var course = request.Course.Trim();
-        var email = request.Email.Trim().ToLowerInvariant();
+        var fullName = (request.FullName ?? string.Empty).Trim();
+        var studentId = (request.StudentId ?? string.Empty).Trim();
+        var yearLevel = (request.YearLevel ?? string.Empty).Trim();
+        var course = (request.Course ?? string.Empty).Trim();
+        var email = (request.Email ?? string.Empty).Trim().ToLowerInvariant();
+        var password = request.Password ?? string.Empty;
+        var confirmPassword = request.ConfirmPassword ?? string.Empty;
 
         if (string.IsNullOrWhiteSpace(fullName) ||
             string.IsNullOrWhiteSpace(studentId) ||
             string.IsNullOrWhiteSpace(yearLevel) ||
             string.IsNullOrWhiteSpace(course) ||
             string.IsNullOrWhiteSpace(email) ||
-            string.IsNullOrWhiteSpace(request.Password))
+            string.IsNullOrWhiteSpace(password))
         {
-            return (false, "All required fields must be provided.", null);
+            return (false, "Please complete all fields.", null);
         }
 
-        if (request.Password != request.ConfirmPassword)
+        if (password != confirmPassword)
         {
             return (false, "Password and confirm password do not match.", null);
         }
 
-        await _syncLock.WaitAsync();
-        try
+        lock (_fileLock)
         {
-            var data = await ReadDataUnsafeAsync();
+            var database = ReadData();
 
-            if (data.Users.Any(user => string.Equals(user.Email, email, StringComparison.OrdinalIgnoreCase)))
+            foreach (var existingUser in database.Users)
             {
-                return (false, "An account with this email already exists.", null);
+                if (string.Equals(existingUser.Email, email, StringComparison.OrdinalIgnoreCase))
+                {
+                    return (false, "Email already exists.", null);
+                }
+
+                if (string.Equals(existingUser.StudentId, studentId, StringComparison.OrdinalIgnoreCase))
+                {
+                    return (false, "Student ID already exists.", null);
+                }
             }
 
-            if (data.Users.Any(user => string.Equals(user.StudentId, studentId, StringComparison.OrdinalIgnoreCase)))
+            var user = new UserEntity
             {
-                return (false, "An account with this student ID already exists.", null);
-            }
-
-            var entity = new UserEntity
-            {
-                Id = Guid.NewGuid().ToString("N"),
+                Id = GetNextUserId(database.Users),
                 FullName = fullName,
                 StudentId = studentId,
                 YearLevel = yearLevel,
                 Course = course,
                 Email = email,
-                PasswordHash = HashPassword(request.Password),
-                MobileNumber = string.Empty,
-                Address = string.Empty,
-                CreatedAtUtc = DateTime.UtcNow.ToString("O", CultureInfo.InvariantCulture)
+                Password = password,
+                CreatedAtUtc = DateTime.UtcNow.ToString("O")
             };
 
-            data.Users.Add(entity);
-            await WriteDataUnsafeAsync(data);
+            database.Users.Add(user);
+            WriteData(database);
 
-            return (true, string.Empty, ToAuthResponse(entity));
-        }
-        finally
-        {
-            _syncLock.Release();
+            return (true, string.Empty, ToAuthResponse(user));
         }
     }
 
-    public async Task<(bool Success, string Error, AuthResponse? User)> LoginAsync(LoginRequest request)
+    // Check student email and password for login.
+    // Example: Email="ana@mail.com", Password="123456".
+    public (bool Success, string Error, AuthResponse? User) Login(LoginRequest request)
     {
-        var email = request.Email.Trim().ToLowerInvariant();
-        var passwordHash = HashPassword(request.Password);
+        var email = (request.Email ?? string.Empty).Trim().ToLowerInvariant();
+        var password = request.Password ?? string.Empty;
 
-        await _syncLock.WaitAsync();
-        try
+        lock (_fileLock)
         {
-            var data = await ReadDataUnsafeAsync();
-            var matchedUser = data.Users.FirstOrDefault(user =>
-                string.Equals(user.Email, email, StringComparison.OrdinalIgnoreCase) &&
-                string.Equals(user.PasswordHash, passwordHash, StringComparison.Ordinal));
+            var database = ReadData();
 
-            if (matchedUser is null)
+            foreach (var user in database.Users)
             {
-                return (false, "Invalid email or password.", null);
+                if (string.Equals(user.Email, email, StringComparison.OrdinalIgnoreCase) &&
+                    string.Equals(user.Password, password, StringComparison.Ordinal))
+                {
+                    return (true, string.Empty, ToAuthResponse(user));
+                }
             }
 
-            return (true, string.Empty, ToAuthResponse(matchedUser));
-        }
-        finally
-        {
-            _syncLock.Release();
+            return (false, "Invalid email or password.", null);
         }
     }
 
-    public async Task<UserProfileResponse?> GetUserAsync(string userId)
+    // Save one attendance record for a student.
+    // Example: UserId="1", Date="2026-04-15", TimeIn="08:00", TimeOut="10:00".
+    public (bool Success, string Error, AttendanceResponse? Record) AddAttendance(CreateAttendanceRequest request)
     {
-        await _syncLock.WaitAsync();
-        try
+        if (string.IsNullOrWhiteSpace(request.UserId) ||
+            string.IsNullOrWhiteSpace(request.Date) ||
+            string.IsNullOrWhiteSpace(request.TimeIn) ||
+            string.IsNullOrWhiteSpace(request.TimeOut) ||
+            string.IsNullOrWhiteSpace(request.SubjectCode) ||
+            string.IsNullOrWhiteSpace(request.Section))
         {
-            var data = await ReadDataUnsafeAsync();
-            var user = data.Users.FirstOrDefault(item => item.Id == userId);
-            return user is null
-                ? null
-                : new UserProfileResponse(
-                    user.Id,
-                    user.FullName,
-                    user.StudentId,
-                    user.YearLevel,
-                    user.Course,
-                    user.Email,
-                    user.MobileNumber,
-                    user.Address);
+            return (false, "Please complete all required attendance fields.", null);
         }
-        finally
-        {
-            _syncLock.Release();
-        }
-    }
 
-    public async Task<(bool Success, string Error, UserProfileResponse? User)> UpdateUserAsync(string userId, UpdateProfileRequest request)
-    {
-        await _syncLock.WaitAsync();
-        try
+        lock (_fileLock)
         {
-            var data = await ReadDataUnsafeAsync();
-            var user = data.Users.FirstOrDefault(item => item.Id == userId);
+            var database = ReadData();
+            UserEntity? user = null;
+
+            foreach (var existingUser in database.Users)
+            {
+                if (existingUser.Id == request.UserId)
+                {
+                    user = existingUser;
+                    break;
+                }
+            }
 
             if (user is null)
             {
-                return (false, "User was not found.", null);
+                return (false, "User not found. Please login again.", null);
             }
 
-            var normalizedEmail = request.Email.Trim().ToLowerInvariant();
-
-            if (data.Users.Any(item => item.Id != userId && string.Equals(item.Email, normalizedEmail, StringComparison.OrdinalIgnoreCase)))
+            var attendance = new AttendanceEntity
             {
-                return (false, "Another account is already using this email.", null);
-            }
-
-            user.FullName = request.FullName.Trim();
-            user.YearLevel = request.YearLevel.Trim();
-            user.Course = request.Course.Trim();
-            user.Email = normalizedEmail;
-            user.MobileNumber = request.MobileNumber.Trim();
-            user.Address = request.Address.Trim();
-
-            await WriteDataUnsafeAsync(data);
-
-            return (true, string.Empty, new UserProfileResponse(
-                user.Id,
-                user.FullName,
-                user.StudentId,
-                user.YearLevel,
-                user.Course,
-                user.Email,
-                user.MobileNumber,
-                user.Address));
-        }
-        finally
-        {
-            _syncLock.Release();
-        }
-    }
-
-    public async Task<(bool Success, string Error, AttendanceResponse? Record)> AddAttendanceAsync(CreateAttendanceRequest request)
-    {
-        var parsedDate = ParseDate(request.Date);
-        if (parsedDate is null)
-        {
-            return (false, "Date must be in yyyy-MM-dd format.", null);
-        }
-
-        var timeIn = NormalizeTime(request.TimeIn);
-        var timeOut = NormalizeTime(request.TimeOut);
-        if (timeIn is null || timeOut is null)
-        {
-            return (false, "Time-in and time-out must be valid times.", null);
-        }
-
-        await _syncLock.WaitAsync();
-        try
-        {
-            var data = await ReadDataUnsafeAsync();
-            var user = data.Users.FirstOrDefault(item => item.Id == request.UserId);
-            if (user is null)
-            {
-                return (false, "Please login before submitting attendance.", null);
-            }
-
-            var record = new AttendanceEntity
-            {
-                Id = Guid.NewGuid().ToString("N"),
+                Id = GetNextAttendanceId(database.Attendance),
                 UserId = user.Id,
                 StudentName = string.IsNullOrWhiteSpace(request.StudentName) ? user.FullName : request.StudentName.Trim(),
                 StudentId = string.IsNullOrWhiteSpace(request.StudentId) ? user.StudentId : request.StudentId.Trim(),
-                Date = parsedDate.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
-                Role = request.Role.Trim(),
-                TimeIn = timeIn.Value.ToString("hh\\:mm", CultureInfo.InvariantCulture),
-                TimeOut = timeOut.Value.ToString("hh\\:mm", CultureInfo.InvariantCulture),
+                Date = request.Date.Trim(),
+                Role = string.IsNullOrWhiteSpace(request.Role) ? "Student" : request.Role.Trim(),
+                TimeIn = request.TimeIn.Trim(),
+                TimeOut = request.TimeOut.Trim(),
                 Course = string.IsNullOrWhiteSpace(request.Course) ? user.Course : request.Course.Trim(),
                 SubjectCode = request.SubjectCode.Trim(),
                 Section = request.Section.Trim(),
-                Status = DetermineStatus(timeIn.Value),
-                CreatedAtUtc = DateTime.UtcNow.ToString("O", CultureInfo.InvariantCulture)
+                Status = GetAttendanceStatus(request.TimeIn),
+                CreatedAtUtc = DateTime.UtcNow.ToString("O")
             };
 
-            data.Attendance.Add(record);
-            await WriteDataUnsafeAsync(data);
+            database.Attendance.Add(attendance);
+            WriteData(database);
 
-            return (true, string.Empty, ToAttendanceResponse(record));
-        }
-        finally
-        {
-            _syncLock.Release();
+            return (true, string.Empty, ToAttendanceResponse(attendance));
         }
     }
 
-    public async Task<List<AttendanceResponse>> GetAttendanceAsync(string userId)
+    // Get all attendance records of one student.
+    // Example: userId="1".
+    public List<AttendanceResponse> GetAttendance(string userId)
     {
-        await _syncLock.WaitAsync();
-        try
+        lock (_fileLock)
         {
-            var data = await ReadDataUnsafeAsync();
-            return data.Attendance
-                .Where(item => item.UserId == userId)
-                .OrderByDescending(item => ParseDate(item.Date) ?? DateOnly.MinValue)
-                .ThenByDescending(item => NormalizeTime(item.TimeIn) ?? TimeSpan.Zero)
-                .Select(ToAttendanceResponse)
-                .ToList();
-        }
-        finally
-        {
-            _syncLock.Release();
-        }
-    }
+            var database = ReadData();
+            var selectedRecords = new List<AttendanceEntity>();
 
-    public async Task<DashboardResponse?> GetDashboardAsync(string userId)
-    {
-        await _syncLock.WaitAsync();
-        try
-        {
-            var data = await ReadDataUnsafeAsync();
-            if (data.Users.All(user => user.Id != userId))
+            foreach (var item in database.Attendance)
             {
-                return null;
-            }
-
-            var records = data.Attendance.Where(item => item.UserId == userId).ToList();
-            var totalCount = records.Count;
-            var presentCount = records.Count(item => item.Status.Equals("Present", StringComparison.OrdinalIgnoreCase));
-            var attendanceRate = totalCount == 0
-                ? 0
-                : (int)Math.Round(presentCount * 100d / totalCount, MidpointRounding.AwayFromZero);
-
-            var today = DateOnly.FromDateTime(DateTime.Now);
-            var thisMonth = today.Month;
-            var thisYear = today.Year;
-
-            var classesToday = records.Count(item => ParseDate(item.Date) == today);
-            var lateThisMonth = records.Count(item =>
-            {
-                var recordDate = ParseDate(item.Date);
-                return recordDate is not null
-                    && recordDate.Value.Month == thisMonth
-                    && recordDate.Value.Year == thisYear
-                    && item.Status.Equals("Late", StringComparison.OrdinalIgnoreCase);
-            });
-
-            var presentDates = records
-                .Where(item => item.Status.Equals("Present", StringComparison.OrdinalIgnoreCase))
-                .Select(item => ParseDate(item.Date))
-                .Where(item => item is not null)
-                .Select(item => item!.Value)
-                .ToHashSet();
-
-            var streakDate = today;
-            var streak = 0;
-            while (presentDates.Contains(streakDate))
-            {
-                streak++;
-                streakDate = streakDate.AddDays(-1);
-            }
-
-            var recentRecords = records
-                .OrderByDescending(item => ParseDate(item.Date) ?? DateOnly.MinValue)
-                .ThenByDescending(item => NormalizeTime(item.TimeIn) ?? TimeSpan.Zero)
-                .Take(5)
-                .Select(item => new RecentAttendanceResponse(
-                    item.SubjectCode,
-                    item.Date,
-                    item.TimeIn,
-                    item.Section,
-                    item.Status))
-                .ToList();
-
-            var subjectRates = records
-                .GroupBy(item => item.SubjectCode)
-                .OrderBy(group => group.Key)
-                .Select(group =>
+                if (item.UserId == userId)
                 {
-                    var groupTotal = group.Count();
-                    var groupPresent = group.Count(item => item.Status.Equals("Present", StringComparison.OrdinalIgnoreCase));
-                    var rate = groupTotal == 0 ? 0 : (int)Math.Round(groupPresent * 100d / groupTotal, MidpointRounding.AwayFromZero);
-                    return new SubjectRateResponse(group.Key, rate);
-                })
-                .ToList();
+                    selectedRecords.Add(item);
+                }
+            }
 
-            return new DashboardResponse(attendanceRate, classesToday, lateThisMonth, streak, recentRecords, subjectRates);
-        }
-        finally
-        {
-            _syncLock.Release();
+            selectedRecords.Sort((a, b) => string.CompareOrdinal(b.CreatedAtUtc, a.CreatedAtUtc));
+
+            var response = new List<AttendanceResponse>();
+            foreach (var item in selectedRecords)
+            {
+                response.Add(ToAttendanceResponse(item));
+            }
+
+            return response;
         }
     }
 
+    // Change user entity format into API response format.
     private static AuthResponse ToAuthResponse(UserEntity user)
     {
         return new AuthResponse(user.Id, user.FullName, user.StudentId, user.YearLevel, user.Course, user.Email);
     }
 
+    // Change attendance entity format into API response format.
     private static AttendanceResponse ToAttendanceResponse(AttendanceEntity record)
     {
         return new AttendanceResponse(
@@ -358,55 +221,80 @@ public sealed class JsonDataStore
             record.CreatedAtUtc);
     }
 
-    private static string DetermineStatus(TimeSpan timeIn)
+    // Decide if attendance is Present or Late using Time In.
+    private static string GetAttendanceStatus(string timeInText)
     {
-        // A simple attendance rule: entries after 08:10 are marked late.
+        if (!TimeSpan.TryParse(timeInText, out var timeIn))
+        {
+            return "Present";
+        }
+
         var lateCutoff = new TimeSpan(8, 10, 0);
         return timeIn > lateCutoff ? "Late" : "Present";
     }
 
-    private static string HashPassword(string password)
+    // Make the next user ID using +1 increment.
+    private static string GetNextUserId(List<UserEntity> users)
     {
-        var bytes = Encoding.UTF8.GetBytes(password);
-        var hash = SHA256.HashData(bytes);
-        return Convert.ToHexString(hash);
+        var highestId = 0;
+
+        foreach (var user in users)
+        {
+            if (int.TryParse(user.Id, out var number) && number > highestId)
+            {
+                highestId = number;
+            }
+        }
+
+        return (highestId + 1).ToString();
     }
 
-    private static DateOnly? ParseDate(string value)
+    // Make the next attendance ID using +1 increment.
+    private static string GetNextAttendanceId(List<AttendanceEntity> attendanceList)
     {
-        return DateOnly.TryParseExact(value, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var date)
-            ? date
-            : null;
+        var highestId = 0;
+
+        foreach (var attendance in attendanceList)
+        {
+            if (int.TryParse(attendance.Id, out var number) && number > highestId)
+            {
+                highestId = number;
+            }
+        }
+
+        return (highestId + 1).ToString();
     }
 
-    private static TimeSpan? NormalizeTime(string value)
+    // Create storage.json if it is missing.
+    private void CreateJsonFileIfMissing()
     {
-        return TimeSpan.TryParse(value, CultureInfo.InvariantCulture, out var time)
-            ? time
-            : null;
-    }
-
-    private void EnsureStorageFileExists()
-    {
-        if (File.Exists(_storageFilePath))
+        if (File.Exists(_jsonFilePath))
         {
             return;
         }
 
         var emptyData = JsonSerializer.Serialize(new DataEnvelope(), SerializerOptions);
-        File.WriteAllText(_storageFilePath, emptyData);
+        File.WriteAllText(_jsonFilePath, emptyData);
     }
 
-    private async Task<DataEnvelope> ReadDataUnsafeAsync()
+    // Read users and attendance data from storage.json.
+    private DataEnvelope ReadData()
     {
-        await using var stream = File.Open(_storageFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-        var data = await JsonSerializer.DeserializeAsync<DataEnvelope>(stream, SerializerOptions);
+        var json = File.ReadAllText(_jsonFilePath);
+
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            return new DataEnvelope();
+        }
+
+        var data = JsonSerializer.Deserialize<DataEnvelope>(json, SerializerOptions);
         return data ?? new DataEnvelope();
     }
 
-    private async Task WriteDataUnsafeAsync(DataEnvelope data)
+    // Save users and attendance data to storage.json.
+    private void WriteData(DataEnvelope data)
     {
-        await using var stream = File.Open(_storageFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
-        await JsonSerializer.SerializeAsync(stream, data, SerializerOptions);
+        var json = JsonSerializer.Serialize(data, SerializerOptions);
+        File.WriteAllText(_jsonFilePath, json);
     }
 }
