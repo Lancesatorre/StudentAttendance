@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Attendance Hub - New Attendance</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        :root {
+            --bg: #f2f1ef;
+            --surface: #ffffff;
+            --surface-2: #f7f6f4;
+            --border: #e8e6e2;
+            --ink: #1c1b19;
+            --ink-2: #6b6861;
+            --ink-3: #b0ada8;
+            --dark: #16151a;
+            --r: 14px
+        }
+
+        html,
+        body {
+            height: 100%;
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg);
+            color: var(--ink);
+            font-size: 15px;
+            line-height: 1.5
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit
+        }
+
+        .shell {
+            display: grid;
+            grid-template-columns: 272px 1fr;
+            height: 100vh;
+            overflow: hidden
+        }
+
+        .sidebar {
+            background: #16151a;
+            display: flex;
+            flex-direction: column;
+            padding: 16px 14px;
+            position: relative;
+            margin: 12px 0 12px 12px;
+            border-radius: 20px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, .35), 0 8px 20px rgba(0, 0, 0, .2);
+            height: calc(100vh - 24px)
+        }
+
+        .sidebar::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 20px;
+            pointer-events: none;
+            background-image: radial-gradient(circle, rgba(255, 255, 255, .03) 1px, transparent 1px);
+            background-size: 18px 18px
+        }
+
+        .sidebar>* {
+            position: relative;
+            z-index: 1
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+            padding: 6px 8px
+        }
+
+        .brand-icon {
+            width: 34px;
+            height: 34px;
+            background: rgba(255, 255, 255, .12);
+            border-radius: 10px;
+            display: grid;
+            place-items: center;
+            border: 1px solid rgba(255, 255, 255, .08)
+        }
+
+        .brand-icon svg {
+            width: 16px;
+            height: 16px;
+            fill: #fff
+        }
+
+        .brand-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff
+        }
+
+        .brand-sub {
+            font-size: 11px;
+            color: rgba(255, 255, 255, .35)
+        }
+
+        .nav-label {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, .25);
+            padding: 0 10px;
+            margin-bottom: 6px
+        }
+
+        nav {
+            display: flex;
+            flex-direction: column;
+            gap: 2px
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-size: 13.5px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, .45);
+            transition: .18s
+        }
+
+        .nav-item svg {
+            width: 16px;
+            height: 16px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 1.7
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, .07);
+            color: rgba(255, 255, 255, .85)
+        }
+
+        .nav-item.active {
+            background: rgba(255, 255, 255, .11);
+            color: #fff;
+            font-weight: 600
+        }
+
+        .sp {
+            flex: 1
+        }
+
+        .user-card {
+            background: rgba(255, 255, 255, .06);
+            border: 1px solid rgba(255, 255, 255, .08);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .15);
+            display: grid;
+            place-items: center;
+            color: #fff
+        }
+
+        .avatar svg {
+            width: 18px;
+            height: 18px;
+            stroke: #fff;
+            fill: none;
+            stroke-width: 1.8
+        }
+
+        .user-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff
+        }
+
+        .user-role {
+            font-size: 11px;
+            color: rgba(255, 255, 255, .35)
+        }
+
+        .sidebar-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 6px
+        }
+
+        .s-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-align: center;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, .45);
+            border: 1px solid rgba(255, 255, 255, .1)
+        }
+
+        .s-btn svg {
+            width: 14px;
+            height: 14px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 1.8;
+            flex-shrink: 0
+        }
+
+        .s-btn.logout {
+            background: rgba(255, 255, 255, .1);
+            color: #fff
+        }
+
+        .main {
+            overflow-y: auto;
+            padding: 36px 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px
+        }
+
+        .topbar {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between
+        }
+
+        .greeting-label {
+            font-size: 13px;
+            color: var(--ink-3);
+            margin-bottom: 6px
+        }
+
+        .greeting-name {
+            font-weight: 700;
+            font-size: 42px;
+            line-height: 1;
+            letter-spacing: -.5px
+        }
+
+        .sem-pill {
+            background: var(--ink);
+            color: #fff;
+            font-size: 12px;
+            padding: 6px 14px;
+            border-radius: 20px
+        }
+
+        .form-layout {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 16px
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+            padding: 22px
+        }
+
+        .card-title {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: .7px;
+            text-transform: uppercase;
+            color: var(--ink-3);
+            margin-bottom: 16px
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px
+        }
+
+        .full {
+            grid-column: 1/-1
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--ink-2);
+            margin-bottom: 6px
+        }
+
+        input,
+        select {
+            width: 100%;
+            height: 44px;
+            border: 1.5px solid var(--border);
+            border-radius: 11px;
+            background: var(--surface-2);
+            padding: 0 14px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            outline: none
+        }
+
+        input:focus,
+        select:focus {
+            border-color: var(--ink);
+            background: var(--surface);
+            box-shadow: 0 0 0 4px rgba(28, 27, 25, .07)
+        }
+
+        .btn {
+            height: 44px;
+            padding: 0 18px;
+            border: none;
+            border-radius: 11px;
+            background: var(--ink);
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 6px
+        }
+
+        .record-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px
+        }
+
+        .record-list li {
+            border: 1px solid var(--border);
+            background: var(--surface-2);
+            border-radius: 10px;
+            padding: 10px 12px
+        }
+
+        .record-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--ink-2)
+        }
+
+        .record-course {
+            margin-top: 3px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--ink)
+        }
+
+        .record-meta {
+            margin-top: 2px;
+            font-size: 12px;
+            color: var(--ink-2)
+        }
+
+        .mini {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 16px
+        }
+
+        .status-list,
+        .tips-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px
+        }
+
+        .status-list li,
+        .tips-list li {
+            border: 1px solid var(--border);
+            background: var(--surface-2);
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 13px;
+            color: var(--ink-2)
+        }
+
+        .status-list strong,
+        .tips-list strong {
+            color: var(--ink)
+        }
+
+        @media(max-width:980px) {
+            .shell {
+                grid-template-columns: 1fr;
+                height: auto
+            }
+
+            .sidebar {
+                height: auto
+            }
+
+            .main {
+                padding: 24px 18px
+            }
+
+            .form-layout,
+            .mini,
+            .form-grid {
+                grid-template-columns: 1fr
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="shell">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-icon"><svg viewBox="0 0 18 18">
+                        <rect x="1" y="1" width="7" height="7" rx="1.5" />
+                        <rect x="10" y="1" width="7" height="7" rx="1.5" />
+                        <rect x="1" y="10" width="7" height="7" rx="1.5" />
+                        <rect x="10" y="10" width="7" height="7" rx="1.5" />
+                    </svg></div>
+                <div>
+                    <div class="brand-name">Attendance Hub</div>
+                    <div class="brand-sub">Student Portal</div>
+                </div>
+            </div>
+            <div class="nav-label">Menu</div>
+            <nav>
+                <a class="nav-item" href="dashboard.html"><svg viewBox="0 0 24 24">
+                        <rect x="3" y="3" width="7" height="7" rx="1" />
+                        <rect x="14" y="3" width="7" height="7" rx="1" />
+                        <rect x="3" y="14" width="7" height="7" rx="1" />
+                        <rect x="14" y="14" width="7" height="7" rx="1" />
+                    </svg>Dashboard</a>
+                <a class="nav-item active" href="new-attendance.html"><svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="9" />
+                        <line x1="12" y1="8" x2="12" y2="16" />
+                        <line x1="8" y1="12" x2="16" y2="12" />
+                    </svg>New Attendance</a>
+                <a class="nav-item" href="attendance-record.html"><svg viewBox="0 0 24 24">
+                        <rect x="3" y="3" width="18" height="18" rx="2" />
+                        <line x1="7" y1="8" x2="17" y2="8" />
+                        <line x1="7" y1="12" x2="17" y2="12" />
+                        <line x1="7" y1="16" x2="13" y2="16" />
+                    </svg>Records</a>
+            </nav>
+            <div class="sp"></div>
+            <div class="user-card">
+                <div class="avatar"><svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="8" r="3.5" />
+                        <path d="M5.5 19.5c1.5-3.2 4-4.8 6.5-4.8s5 1.6 6.5 4.8" />
+                    </svg></div>
+                <div>
+                    <div class="user-name" id="sidebarUserName">Student Name</div>
+                    <div class="user-role" id="sidebarUserRole">Course — Year</div>
+                </div>
+            </div>
+            <div class="sidebar-actions"><a class="s-btn" href="profile.html"><svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="8" r="3.5" />
+                        <path d="M5.5 19.5c1.5-3.2 4-4.8 6.5-4.8s5 1.6 6.5 4.8" />
+                    </svg>Profile Settings</a><a class="s-btn logout" id="logoutBtn" href="login.html"><svg
+                        viewBox="0 0 24 24">
+                        <path d="M10 7H7a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h3" />
+                        <path d="M14 16l4-4-4-4" />
+                        <path d="M18 12h-8" />
+                    </svg>Log out</a></div>
+        </aside>
+
+        <main class="main">
+            <header class="topbar">
+                <div>
+                    <div class="greeting-label">Secure Form</div>
+                    <h1 class="greeting-name">New Attendance</h1>
+                </div>
+                <span class="sem-pill">Session Entry</span>
+            </header>
+
+            <section class="form-layout">
+                <article class="card">
+                    <div class="card-title">Fill attendance details</div>
+                    <form id="attendanceForm">
+                        <div class="form-grid">
+                            <div class="full"><label>Student Name</label><input id="studentName" type="text"
+                                    placeholder="Full name" required /></div>
+                            <div class="full"><label>ID Number</label><input id="studentId" type="text"
+                                    placeholder="2026-00045" required /></div>
+                            <div><label>Date</label><input id="entryDate" type="date" required /></div>
+                            <div><label>Role</label><select id="role">
+                                    <option>Student</option>
+                                    <option>Class Representative</option>
+                                </select></div>
+                            <div><label>Time-In</label><input id="timeIn" type="time" required /></div>
+                            <div><label>Time-Out</label><input id="timeOut" type="time" required /></div>
+                            <div class="full"><label>Department / Course</label><select id="course">
+                                    <option>BS Computer Science</option>
+                                    <option>BS Information Technology</option>
+                                </select></div>
+                            <div><label>Subject Code</label><input id="subjectCode" type="text" placeholder="CS-301"
+                                    required /></div>
+                            <div><label>Section</label><input id="section" type="text" placeholder="3A" required />
+                            </div>
+                        </div>
+                        <button class="btn" id="submitBtn" type="submit">Submit Attendance</button>
+                    </form>
+                    <p id="submitMessage" style="margin-top:10px;font-size:13px;color:var(--ink-2)"></p>
+                </article>
+
+                <aside class="card">
+                    <div class="card-title">Recent records</div>
+                    <ul class="record-list" id="recentList">
+                        <li>Loading records...</li>
+                    </ul>
+                </aside>
+            </section>
+
+            <section class="mini">
+                <article class="card">
+                    <div class="card-title">Status</div>
+                    <ul class="status-list">
+                        <li><strong>Current Semester:</strong> 2nd Semester AY 2025-2026</li>
+                        <li><strong>Attendance Today:</strong> <span id="attendanceTodayValue">0 submitted
+                                records</span></li>
+                        <li><strong>Weekly Standing:</strong> 96% on-time attendance</li>
+                    </ul>
+                </article>
+                <article class="card">
+                    <div class="card-title">Tips</div>
+                    <ul class="tips-list">
+                        <li><strong>Double-check time:</strong> verify Time-In and Time-Out before submitting.</li>
+                        <li><strong>Use subject code format:</strong> example CS-301 or IT-220 for consistency.</li>
+                        <li><strong>Submit early:</strong> log attendance within the first 10 minutes of class.</li>
+                    </ul>
+                </article>
+            </section>
+        </main>
+    </div>
+
+    <script src="app-client.js"></script>
+    <script>
+        var currentUser = AttendanceApi.requireUser('login.html');
+
+        if (currentUser) {
+            document.getElementById('sidebarUserName').textContent = currentUser.fullName;
+            document.getElementById('sidebarUserRole').textContent = currentUser.course + ' — ' + currentUser.yearLevel;
+            document.getElementById('studentName').value = currentUser.fullName;
+            document.getElementById('studentId').value = currentUser.studentId;
+
+            var courseSelect = document.getElementById('course');
+            var hasCourse = Array.from(courseSelect.options).some(function (item) { return item.value === currentUser.course; });
+            if (!hasCourse) {
+                var option = document.createElement('option');
+                option.value = currentUser.course;
+                option.textContent = currentUser.course;
+                courseSelect.appendChild(option);
+            }
+            courseSelect.value = currentUser.course;
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', async function (event) {
+            event.preventDefault();
+            var shouldLogout = await AttendanceApi.confirmLogout();
+            if (!shouldLogout) {
+                return;
+            }
+            AttendanceApi.clearCurrentUser();
+            window.location.href = 'login.html';
+        });
+
+        document.getElementById('entryDate').valueAsDate = new Date();
+
+        function formatDateLabel(dateText) {
+            var date = new Date(dateText + 'T00:00:00');
+            if (Number.isNaN(date.getTime())) {
+                return dateText;
+            }
+
+            return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        function renderRecent(records) {
+            var recentList = document.getElementById('recentList');
+            var todayCount = 0;
+            var todayText = new Date().toISOString().slice(0, 10);
+
+            records.forEach(function (record) {
+                if (record.date === todayText) {
+                    todayCount++;
+                }
+            });
+
+            document.getElementById('attendanceTodayValue').textContent = todayCount + (todayCount === 1 ? ' submitted record' : ' submitted records');
+
+            if (!records.length) {
+                recentList.innerHTML = '<li>No attendance records yet.</li>';
+                return;
+            }
+
+            recentList.innerHTML = records.slice(0, 5).map(function (record) {
+                return '<li>' +
+                    '<div class="record-top"><span>' + formatDateLabel(record.date) + '</span><span>' + record.timeIn + ' - ' + record.timeOut + '</span></div>' +
+                    '<div class="record-course">' + record.subjectCode + '</div>' +
+                    '<div class="record-meta">Section ' + record.section + ' • ' + record.status + '</div>' +
+                    '</li>';
+            }).join('');
+        }
+
+        async function loadRecentRecords() {
+            if (!currentUser) {
+                return;
+            }
+
+            try {
+                var records = await AttendanceApi.request('/api/attendance?userId=' + encodeURIComponent(currentUser.userId));
+                renderRecent(records);
+            } catch (error) {
+                document.getElementById('recentList').innerHTML = '<li>' + error.message + '</li>';
+            }
+        }
+
+        var attendanceForm = document.getElementById('attendanceForm');
+        var submitBtn = document.getElementById('submitBtn');
+        var submitMessage = document.getElementById('submitMessage');
+
+        attendanceForm.addEventListener('submit', async function (event) {
+            event.preventDefault();
+            if (!currentUser) {
+                return;
+            }
+
+            submitMessage.textContent = '';
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+
+            try {
+                var payload = {
+                    userId: currentUser.userId,
+                    studentName: document.getElementById('studentName').value,
+                    studentId: document.getElementById('studentId').value,
+                    date: document.getElementById('entryDate').value,
+                    role: document.getElementById('role').value,
+                    timeIn: document.getElementById('timeIn').value,
+                    timeOut: document.getElementById('timeOut').value,
+                    course: document.getElementById('course').value,
+                    subjectCode: document.getElementById('subjectCode').value,
+                    section: document.getElementById('section').value
+                };
+
+                await AttendanceApi.request('/api/attendance', {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+
+                submitMessage.textContent = 'Attendance saved successfully.';
+                attendanceForm.reset();
+                document.getElementById('entryDate').valueAsDate = new Date();
+                document.getElementById('studentName').value = currentUser.fullName;
+                document.getElementById('studentId').value = currentUser.studentId;
+                document.getElementById('course').value = currentUser.course;
+                await loadRecentRecords();
+            } catch (error) {
+                submitMessage.textContent = error.message;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Attendance';
+            }
+        });
+
+        loadRecentRecords();
+    </script>
+</body>
+
+</html>

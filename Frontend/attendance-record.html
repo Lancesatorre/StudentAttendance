@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Attendance Hub - Attendance Record</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        :root {
+            --bg: #f2f1ef;
+            --surface: #ffffff;
+            --surface-2: #f7f6f4;
+            --border: #e8e6e2;
+            --ink: #1c1b19;
+            --ink-2: #6b6861;
+            --ink-3: #b0ada8;
+            --dark: #16151a;
+            --r: 14px
+        }
+
+        html,
+        body {
+            height: 100%;
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg);
+            color: var(--ink);
+            font-size: 15px;
+            line-height: 1.5
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit
+        }
+
+        .shell {
+            display: grid;
+            grid-template-columns: 272px 1fr;
+            height: 100vh;
+            overflow: hidden
+        }
+
+        .sidebar {
+            background: #16151a;
+            display: flex;
+            flex-direction: column;
+            padding: 16px 14px;
+            position: relative;
+            margin: 12px 0 12px 12px;
+            border-radius: 20px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, .35), 0 8px 20px rgba(0, 0, 0, .2);
+            height: calc(100vh - 24px)
+        }
+
+        .sidebar::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 20px;
+            pointer-events: none;
+            background-image: radial-gradient(circle, rgba(255, 255, 255, .03) 1px, transparent 1px);
+            background-size: 18px 18px
+        }
+
+        .sidebar>* {
+            position: relative;
+            z-index: 1
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+            padding: 6px 8px
+        }
+
+        .brand-icon {
+            width: 34px;
+            height: 34px;
+            background: rgba(255, 255, 255, .12);
+            border-radius: 10px;
+            display: grid;
+            place-items: center;
+            border: 1px solid rgba(255, 255, 255, .08)
+        }
+
+        .brand-icon svg {
+            width: 16px;
+            height: 16px;
+            fill: #fff
+        }
+
+        .brand-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff
+        }
+
+        .brand-sub {
+            font-size: 11px;
+            color: rgba(255, 255, 255, .35)
+        }
+
+        .nav-label {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, .25);
+            padding: 0 10px;
+            margin-bottom: 6px
+        }
+
+        nav {
+            display: flex;
+            flex-direction: column;
+            gap: 2px
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-size: 13.5px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, .45);
+            transition: .18s
+        }
+
+        .nav-item svg {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 1.7;
+        }
+
+        .nav-item.active {
+            background: rgba(255, 255, 255, .11);
+            color: #fff;
+            font-weight: 600
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, .07);
+            color: rgba(255, 255, 255, .85)
+        }
+
+        .sp {
+            flex: 1
+        }
+
+        .user-card {
+            background: rgba(255, 255, 255, .06);
+            border: 1px solid rgba(255, 255, 255, .08);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .15);
+            display: grid;
+            place-items: center;
+            color: #fff
+        }
+
+        .avatar svg {
+            width: 18px;
+            height: 18px;
+            stroke: #fff;
+            fill: none;
+            stroke-width: 1.8;
+        }
+
+        .user-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff
+        }
+
+        .user-role {
+            font-size: 11px;
+            color: rgba(255, 255, 255, .35)
+        }
+
+        .sidebar-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 6px
+        }
+
+        .s-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-align: center;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, .45);
+            border: 1px solid rgba(255, 255, 255, .1)
+        }
+
+        .s-btn svg {
+            width: 14px;
+            height: 14px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 1.8;
+            flex-shrink: 0;
+        }
+
+        .s-btn.logout {
+            background: rgba(255, 255, 255, .1);
+            color: #fff
+        }
+
+        .main {
+            overflow-y: auto;
+            padding: 36px 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start
+        }
+
+        .greeting-label {
+            font-size: 13px;
+            color: var(--ink-3);
+            margin-bottom: 6px
+        }
+
+        .greeting-name {
+            font-weight: 700;
+            font-size: 42px;
+            line-height: 1;
+            letter-spacing: -.5px
+        }
+
+        .sem-pill {
+            background: var(--ink);
+            color: #fff;
+            font-size: 12px;
+            padding: 6px 14px;
+            border-radius: 20px
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+            padding: 22px
+        }
+
+        .card-title {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: .7px;
+            text-transform: uppercase;
+            color: var(--ink-3);
+            margin-bottom: 16px
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--ink-2);
+            margin-bottom: 6px
+        }
+
+        select {
+            width: 100%;
+            height: 44px;
+            border: 1.5px solid var(--border);
+            border-radius: 11px;
+            background: var(--surface-2);
+            padding: 0 14px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            outline: none
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse
+        }
+
+        th {
+            padding: 12px;
+            text-align: left;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: .7px;
+            color: var(--ink-3);
+            border-bottom: 1px solid var(--border)
+        }
+
+        td {
+            padding: 13px 12px;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+            color: var(--ink-2)
+        }
+
+        tbody tr:hover {
+            background: var(--surface-2)
+        }
+
+        .status {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 600
+        }
+
+        .present {
+            background: #eaf4ef;
+            color: #2d6a4f
+        }
+
+        .late {
+            background: #fff3cd;
+            color: #856404
+        }
+
+        @media(max-width:980px) {
+            .shell {
+                grid-template-columns: 1fr;
+                height: auto
+            }
+
+            .sidebar {
+                height: auto
+            }
+
+            .main {
+                padding: 24px 18px
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="shell">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-icon"><svg viewBox="0 0 18 18">
+                        <rect x="1" y="1" width="7" height="7" rx="1.5" />
+                        <rect x="10" y="1" width="7" height="7" rx="1.5" />
+                        <rect x="1" y="10" width="7" height="7" rx="1.5" />
+                        <rect x="10" y="10" width="7" height="7" rx="1.5" />
+                    </svg></div>
+                <div>
+                    <div class="brand-name">Attendance Hub</div>
+                    <div class="brand-sub">Student Portal</div>
+                </div>
+            </div>
+            <div class="nav-label">Menu</div>
+            <nav>
+                <a class="nav-item" href="dashboard.html"><svg viewBox="0 0 24 24">
+                        <rect x="3" y="3" width="7" height="7" rx="1" />
+                        <rect x="14" y="3" width="7" height="7" rx="1" />
+                        <rect x="3" y="14" width="7" height="7" rx="1" />
+                        <rect x="14" y="14" width="7" height="7" rx="1" />
+                    </svg>Dashboard</a>
+                <a class="nav-item" href="new-attendance.html"><svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="9" />
+                        <line x1="12" y1="8" x2="12" y2="16" />
+                        <line x1="8" y1="12" x2="16" y2="12" />
+                    </svg>New Attendance</a>
+                <a class="nav-item active" href="attendance-record.html"><svg viewBox="0 0 24 24">
+                        <rect x="3" y="3" width="18" height="18" rx="2" />
+                        <line x1="7" y1="8" x2="17" y2="8" />
+                        <line x1="7" y1="12" x2="17" y2="12" />
+                        <line x1="7" y1="16" x2="13" y2="16" />
+                    </svg>Records</a>
+            </nav>
+            <div class="sp"></div>
+            <div class="user-card">
+                <div class="avatar"><svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="8" r="3.5" />
+                        <path d="M5.5 19.5c1.5-3.2 4-4.8 6.5-4.8s5 1.6 6.5 4.8" />
+                    </svg></div>
+                <div>
+                    <div class="user-name" id="sidebarUserName">Student Name</div>
+                    <div class="user-role" id="sidebarUserRole">Course — Year</div>
+                </div>
+            </div>
+            <div class="sidebar-actions"><a class="s-btn" href="profile.html"><svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="8" r="3.5" />
+                        <path d="M5.5 19.5c1.5-3.2 4-4.8 6.5-4.8s5 1.6 6.5 4.8" />
+                    </svg>Profile Settings</a><a class="s-btn logout" id="logoutBtn" href="login.html"><svg
+                        viewBox="0 0 24 24">
+                        <path d="M10 7H7a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h3" />
+                        <path d="M14 16l4-4-4-4" />
+                        <path d="M18 12h-8" />
+                    </svg>Log out</a></div>
+        </aside>
+
+        <main class="main">
+            <header class="topbar">
+                <div>
+                    <div class="greeting-label">History</div>
+                    <h1 class="greeting-name">Attendance Record</h1>
+                </div>
+                <span class="sem-pill">Updated Today</span>
+            </header>
+
+            <section class="card">
+                <div class="card-title">Filters</div>
+                <div class="form-grid">
+                    <div><label>Filter by Month</label><select id="monthFilter">
+                            <option value="all">All Months</option>
+                        </select></div>
+                    <div><label>Filter by Subject</label><select id="subjectFilter">
+                            <option value="all">All Subjects</option>
+                        </select></div>
+                </div>
+            </section>
+
+            <section class="card">
+                <div class="card-title">Log entries</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Subject</th>
+                            <th>Time In</th>
+                            <th>Time Out</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recordsBody">
+                        <tr>
+                            <td colspan="5">Loading records...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+
+    <script src="app-client.js"></script>
+    <script>
+        var currentUser = AttendanceApi.requireUser('login.html');
+        var allRecords = [];
+
+        if (currentUser) {
+            document.getElementById('sidebarUserName').textContent = currentUser.fullName;
+            document.getElementById('sidebarUserRole').textContent = currentUser.course + ' — ' + currentUser.yearLevel;
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', async function (event) {
+            event.preventDefault();
+            var shouldLogout = await AttendanceApi.confirmLogout();
+            if (!shouldLogout) {
+                return;
+            }
+            AttendanceApi.clearCurrentUser();
+            window.location.href = 'login.html';
+        });
+
+        function formatDate(dateText) {
+            var date = new Date(dateText + 'T00:00:00');
+            if (Number.isNaN(date.getTime())) {
+                return dateText;
+            }
+
+            return date.toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' });
+        }
+
+        function formatTime(timeText) {
+            if (!timeText) {
+                return '';
+            }
+
+            var date = new Date('1970-01-01T' + timeText + ':00');
+            if (Number.isNaN(date.getTime())) {
+                return timeText;
+            }
+
+            return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+        }
+
+        function getMonthKey(dateText) {
+            return dateText ? dateText.slice(0, 7) : '';
+        }
+
+        function monthLabel(monthKey) {
+            var date = new Date(monthKey + '-01T00:00:00');
+            if (Number.isNaN(date.getTime())) {
+                return monthKey;
+            }
+
+            return date.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+        }
+
+        function refreshFilters(records) {
+            var monthFilter = document.getElementById('monthFilter');
+            var subjectFilter = document.getElementById('subjectFilter');
+            var selectedMonth = monthFilter.value;
+            var selectedSubject = subjectFilter.value;
+
+            var months = Array.from(new Set(records.map(function (item) { return getMonthKey(item.date); }).filter(Boolean))).sort().reverse();
+            var subjects = Array.from(new Set(records.map(function (item) { return item.subjectCode; }).filter(Boolean))).sort();
+
+            monthFilter.innerHTML = '<option value="all">All Months</option>' + months.map(function (month) {
+                return '<option value="' + month + '">' + monthLabel(month) + '</option>';
+            }).join('');
+
+            subjectFilter.innerHTML = '<option value="all">All Subjects</option>' + subjects.map(function (subject) {
+                return '<option value="' + subject + '">' + subject + '</option>';
+            }).join('');
+
+            if (selectedMonth && Array.from(monthFilter.options).some(function (option) { return option.value === selectedMonth; })) {
+                monthFilter.value = selectedMonth;
+            }
+
+            if (selectedSubject && Array.from(subjectFilter.options).some(function (option) { return option.value === selectedSubject; })) {
+                subjectFilter.value = selectedSubject;
+            }
+        }
+
+        function renderTable() {
+            var monthValue = document.getElementById('monthFilter').value;
+            var subjectValue = document.getElementById('subjectFilter').value;
+
+            var filtered = allRecords.filter(function (item) {
+                var monthMatch = monthValue === 'all' || getMonthKey(item.date) === monthValue;
+                var subjectMatch = subjectValue === 'all' || item.subjectCode === subjectValue;
+                return monthMatch && subjectMatch;
+            });
+
+            var body = document.getElementById('recordsBody');
+            if (!filtered.length) {
+                body.innerHTML = '<tr><td colspan="5">No records found for this filter.</td></tr>';
+                return;
+            }
+
+            body.innerHTML = filtered.map(function (item) {
+                var statusClass = item.status.toLowerCase() === 'late' ? 'late' : 'present';
+                return '<tr>' +
+                    '<td>' + formatDate(item.date) + '</td>' +
+                    '<td>' + item.subjectCode + '</td>' +
+                    '<td>' + formatTime(item.timeIn) + '</td>' +
+                    '<td>' + formatTime(item.timeOut) + '</td>' +
+                    '<td><span class="status ' + statusClass + '">' + item.status + '</span></td>' +
+                    '</tr>';
+            }).join('');
+        }
+
+        async function loadRecords() {
+            if (!currentUser) {
+                return;
+            }
+
+            try {
+                allRecords = await AttendanceApi.request('/api/attendance?userId=' + encodeURIComponent(currentUser.userId));
+                refreshFilters(allRecords);
+                renderTable();
+            } catch (error) {
+                document.getElementById('recordsBody').innerHTML = '<tr><td colspan="5">' + error.message + '</td></tr>';
+            }
+        }
+
+        document.getElementById('monthFilter').addEventListener('change', renderTable);
+        document.getElementById('subjectFilter').addEventListener('change', renderTable);
+
+        loadRecords();
+    </script>
+</body>
+
+</html>

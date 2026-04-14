@@ -1,0 +1,117 @@
+{
+  "users": [
+    {
+      "id": "8fe4f26d8996476689c318d373fae25f",
+      "fullName": "Lance Timothy Satorre",
+      "studentId": "2026-1234",
+      "yearLevel": "Year 1",
+      "course": "BS Information Technology",
+      "email": "lanceerrotas@gmail.com",
+      "passwordHash": "96CAE35CE8A9B0244178BF28E4966C2CE1B8385723A96A6B838858CDD6CA0A1E",
+      "mobileNumber": "",
+      "address": "",
+      "createdAtUtc": "2026-04-13T03:50:57.3101712Z"
+    },
+    {
+      "id": "cde6458dbe79482288e80ecc986c052f",
+      "fullName": "Anthony Putol",
+      "studentId": "2026-1245",
+      "yearLevel": "Year 1",
+      "course": "BS Information Technology",
+      "email": "lanceerrotas123@gmail.com",
+      "passwordHash": "96CAE35CE8A9B0244178BF28E4966C2CE1B8385723A96A6B838858CDD6CA0A1E",
+      "mobileNumber": "09958415907",
+      "address": "asdasdads",
+      "createdAtUtc": "2026-04-13T04:06:09.1260691Z"
+    },
+    {
+      "id": "4135352ff66f473185418d2cedc222d2",
+      "fullName": "Jomar Matchan",
+      "studentId": "2026-2012",
+      "yearLevel": "Year 1",
+      "course": "BS Information Technology",
+      "email": "jomar@gmail.com",
+      "passwordHash": "96CAE35CE8A9B0244178BF28E4966C2CE1B8385723A96A6B838858CDD6CA0A1E",
+      "mobileNumber": "",
+      "address": "",
+      "createdAtUtc": "2026-04-13T04:16:47.5034681Z"
+    }
+  ],
+  "attendance": [
+    {
+      "id": "4590c52f969d4410abc6424ff2f5b6eb",
+      "userId": "8fe4f26d8996476689c318d373fae25f",
+      "studentName": "Lance Timothy Satorre",
+      "studentId": "2026-1234",
+      "date": "2026-04-13",
+      "role": "Student",
+      "timeIn": "01:02",
+      "timeOut": "14:02",
+      "course": "BS Information Technology",
+      "subjectCode": "123",
+      "section": "3B",
+      "status": "Present",
+      "createdAtUtc": "2026-04-13T03:51:31.3080426Z"
+    },
+    {
+      "id": "3540146927584d2dbb977b56c7bf3dbd",
+      "userId": "8fe4f26d8996476689c318d373fae25f",
+      "studentName": "Lance Timothy Satorre",
+      "studentId": "2026-1234",
+      "date": "2026-04-13",
+      "role": "Student",
+      "timeIn": "01:01",
+      "timeOut": "13:01",
+      "course": "BS Information Technology",
+      "subjectCode": "CS-301",
+      "section": "3B",
+      "status": "Present",
+      "createdAtUtc": "2026-04-13T03:59:55.0275253Z"
+    },
+    {
+      "id": "f055792111034e7f84118409316f1826",
+      "userId": "cde6458dbe79482288e80ecc986c052f",
+      "studentName": "Anthony Putol",
+      "studentId": "2026-1245",
+      "date": "2026-04-13",
+      "role": "Student",
+      "timeIn": "11:01",
+      "timeOut": "01:03",
+      "course": "BS Information Technology",
+      "subjectCode": "CS-233",
+      "section": "3b",
+      "status": "Late",
+      "createdAtUtc": "2026-04-13T04:07:25.8110447Z"
+    },
+    {
+      "id": "40a4e383fa6d47e7a56964739a0b4c21",
+      "userId": "4135352ff66f473185418d2cedc222d2",
+      "studentName": "Jomar Matchan",
+      "studentId": "2026-2012",
+      "date": "2026-04-13",
+      "role": "Student",
+      "timeIn": "13:00",
+      "timeOut": "15:00",
+      "course": "BS Information Technology",
+      "subjectCode": "CS-201",
+      "section": "EB",
+      "status": "Late",
+      "createdAtUtc": "2026-04-13T04:17:14.6611099Z"
+    },
+    {
+      "id": "b473867702774296b9acfe7e2292a58a",
+      "userId": "8fe4f26d8996476689c318d373fae25f",
+      "studentName": "Lance Timothy Satorre",
+      "studentId": "2026-1234",
+      "date": "2026-04-14",
+      "role": "Student",
+      "timeIn": "14:22",
+      "timeOut": "14:03",
+      "course": "BS Information Technology",
+      "subjectCode": "CS-301",
+      "section": "3B",
+      "status": "Late",
+      "createdAtUtc": "2026-04-14T17:31:21.9912133Z"
+    }
+  ]
+}
