@@ -365,102 +365,121 @@
         var registerForm = document.getElementById('registerForm');
         var registerBtn = document.getElementById('registerBtn');
         var registerMessage = document.getElementById('registerMessage');
-        var formFields = {
-            fullName: document.getElementById('fullName'),
-            studentId: document.getElementById('studentId'),
-            yearLevel: document.getElementById('yearLevel'),
-            course: document.getElementById('course'),
-            email: document.getElementById('email'),
-            password: document.getElementById('password'),
-            confirmPassword: document.getElementById('confirmPassword')
-        };
-        var fieldErrors = {
-            fullName: document.getElementById('fullNameError'),
-            studentId: document.getElementById('studentIdError'),
-            yearLevel: document.getElementById('yearLevelError'),
-            course: document.getElementById('courseError'),
-            email: document.getElementById('emailError'),
-            password: document.getElementById('passwordError'),
-            confirmPassword: document.getElementById('confirmPasswordError')
-        };
+        var fullNameInput = document.getElementById('fullName');
+        var studentIdInput = document.getElementById('studentId');
+        var yearLevelInput = document.getElementById('yearLevel');
+        var courseInput = document.getElementById('course');
+        var emailInput = document.getElementById('email');
+        var passwordInput = document.getElementById('password');
+        var confirmPasswordInput = document.getElementById('confirmPassword');
 
-        function clearFieldErrors() {
+        var fullNameError = document.getElementById('fullNameError');
+        var studentIdError = document.getElementById('studentIdError');
+        var yearLevelError = document.getElementById('yearLevelError');
+        var courseError = document.getElementById('courseError');
+        var emailError = document.getElementById('emailError');
+        var passwordError = document.getElementById('passwordError');
+        var confirmPasswordError = document.getElementById('confirmPasswordError');
+
+        // Clear all validation messages and red borders.
+        function clearErrors() {
             registerMessage.textContent = '';
-            Object.keys(formFields).forEach(function (key) {
-                formFields[key].classList.remove('input-error');
-                fieldErrors[key].textContent = '';
-            });
+
+            fullNameInput.classList.remove('input-error');
+            studentIdInput.classList.remove('input-error');
+            yearLevelInput.classList.remove('input-error');
+            courseInput.classList.remove('input-error');
+            emailInput.classList.remove('input-error');
+            passwordInput.classList.remove('input-error');
+            confirmPasswordInput.classList.remove('input-error');
+
+            fullNameError.textContent = '';
+            studentIdError.textContent = '';
+            yearLevelError.textContent = '';
+            courseError.textContent = '';
+            emailError.textContent = '';
+            passwordError.textContent = '';
+            confirmPasswordError.textContent = '';
         }
 
-        function setFieldError(fieldKey, message) {
-            formFields[fieldKey].classList.add('input-error');
-            fieldErrors[fieldKey].textContent = message;
+        // Show one validation error on an input.
+        function showError(input, errorNode, message) {
+            input.classList.add('input-error');
+            errorNode.textContent = message;
         }
 
-        Object.keys(formFields).forEach(function (key) {
-            formFields[key].addEventListener('input', function () {
-                formFields[key].classList.remove('input-error');
-                fieldErrors[key].textContent = '';
-            });
+        // Clear one field error when user updates that field.
+        function clearSingleField(input, errorNode) {
+            input.classList.remove('input-error');
+            errorNode.textContent = '';
+        }
 
-            formFields[key].addEventListener('change', function () {
-                formFields[key].classList.remove('input-error');
-                fieldErrors[key].textContent = '';
-            });
-        });
+        // Remove errors as user types or changes values.
+        fullNameInput.addEventListener('input', function () { clearSingleField(fullNameInput, fullNameError); });
+        studentIdInput.addEventListener('input', function () { clearSingleField(studentIdInput, studentIdError); });
+        yearLevelInput.addEventListener('change', function () { clearSingleField(yearLevelInput, yearLevelError); });
+        courseInput.addEventListener('change', function () { clearSingleField(courseInput, courseError); });
+        emailInput.addEventListener('input', function () { clearSingleField(emailInput, emailError); });
+        passwordInput.addEventListener('input', function () { clearSingleField(passwordInput, passwordError); });
+        confirmPasswordInput.addEventListener('input', function () { clearSingleField(confirmPasswordInput, confirmPasswordError); });
 
+        // Handle register form submit.
         registerForm.addEventListener('submit', async function (event) {
             event.preventDefault();
-            clearFieldErrors();
+            clearErrors();
 
             var payload = {
-                fullName: formFields.fullName.value.trim(),
-                studentId: formFields.studentId.value.trim(),
-                yearLevel: formFields.yearLevel.value,
-                course: formFields.course.value,
-                email: formFields.email.value.trim(),
-                password: formFields.password.value,
-                confirmPassword: formFields.confirmPassword.value
+                fullName: fullNameInput.value.trim(),
+                studentId: studentIdInput.value.trim(),
+                yearLevel: yearLevelInput.value,
+                course: courseInput.value,
+                email: emailInput.value.trim(),
+                password: passwordInput.value,
+                confirmPassword: confirmPasswordInput.value
             };
 
-            var hasError = false;
-
             if (!payload.fullName) {
-                setFieldError('fullName', 'Full name is required.');
-                hasError = true;
-            }
-            if (!payload.studentId) {
-                setFieldError('studentId', 'Student ID is required.');
-                hasError = true;
-            }
-            if (!payload.yearLevel) {
-                setFieldError('yearLevel', 'Please select your year level.');
-                hasError = true;
-            }
-            if (!payload.course) {
-                setFieldError('course', 'Please select your course.');
-                hasError = true;
-            }
-            if (!payload.email) {
-                setFieldError('email', 'Email is required.');
-                hasError = true;
-            } else if (!formFields.email.validity.valid) {
-                setFieldError('email', 'Please enter a valid email address.');
-                hasError = true;
-            }
-            if (!payload.password) {
-                setFieldError('password', 'Password is required.');
-                hasError = true;
-            }
-            if (!payload.confirmPassword) {
-                setFieldError('confirmPassword', 'Please confirm your password.');
-                hasError = true;
-            } else if (payload.password && payload.password !== payload.confirmPassword) {
-                setFieldError('confirmPassword', 'Password and confirm password do not match.');
-                hasError = true;
+                showError(fullNameInput, fullNameError, 'Full name is required.');
+                return;
             }
 
-            if (hasError) {
+            if (!payload.studentId) {
+                showError(studentIdInput, studentIdError, 'Student ID is required.');
+                return;
+            }
+
+            if (!payload.yearLevel) {
+                showError(yearLevelInput, yearLevelError, 'Please select your year level.');
+                return;
+            }
+
+            if (!payload.course) {
+                showError(courseInput, courseError, 'Please select your course.');
+                return;
+            }
+
+            if (!payload.email) {
+                showError(emailInput, emailError, 'Email is required.');
+                return;
+            }
+
+            if (!emailInput.validity.valid) {
+                showError(emailInput, emailError, 'Please enter a valid email address.');
+                return;
+            }
+
+            if (!payload.password) {
+                showError(passwordInput, passwordError, 'Password is required.');
+                return;
+            }
+
+            if (!payload.confirmPassword) {
+                showError(confirmPasswordInput, confirmPasswordError, 'Please confirm your password.');
+                return;
+            }
+
+            if (payload.password !== payload.confirmPassword) {
+                showError(confirmPasswordInput, confirmPasswordError, 'Password and confirm password do not match.');
                 return;
             }
 
@@ -468,7 +487,7 @@
             registerBtn.textContent = 'Creating account...';
 
             try {
-                await AttendanceApi.request('/api/auth/register', {
+                await AttendanceApi.request('/api/register', {
                     method: 'POST',
                     body: JSON.stringify(payload)
                 });
@@ -478,13 +497,13 @@
             } catch (error) {
                 var loweredMessage = (error.message || '').toLowerCase();
                 if (loweredMessage.includes('student id')) {
-                    setFieldError('studentId', error.message);
+                    showError(studentIdInput, studentIdError, error.message);
                 } else if (loweredMessage.includes('email')) {
-                    setFieldError('email', error.message);
+                    showError(emailInput, emailError, error.message);
                 } else if (loweredMessage.includes('confirm password') || loweredMessage.includes('password and confirm')) {
-                    setFieldError('confirmPassword', error.message);
+                    showError(confirmPasswordInput, confirmPasswordError, error.message);
                 } else if (loweredMessage.includes('password')) {
-                    setFieldError('password', error.message);
+                    showError(passwordInput, passwordError, error.message);
                 } else {
                     registerMessage.textContent = error.message;
                 }

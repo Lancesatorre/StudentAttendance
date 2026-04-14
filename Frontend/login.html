@@ -333,8 +333,6 @@
                     <div class="row"><span class="forgot">Forgot password?</span></div>
                     <button class="btn" id="loginBtn" type="submit">Login</button>
                 </form>
-                <div class="line"><span>or</span></div>
-                <button class="btn-google" type="button">Continue with Google</button>
                 <div class="signup" id="loginMessage"></div>
                 <div class="signup">Don't have an account? <a href="register.html"><b>Sign up</b></a></div>
             </section>
@@ -343,6 +341,7 @@
 
     <script src="app-client.js"></script>
     <script>
+        // If user is already logged in, go directly to dashboard.
         var currentUser = AttendanceApi.getCurrentUser();
         if (currentUser && currentUser.userId) {
             window.location.href = 'dashboard.html';
@@ -356,7 +355,8 @@
         var emailError = document.getElementById('emailError');
         var passwordError = document.getElementById('passwordError');
 
-        function clearFieldErrors() {
+        // Clear all error messages and red borders.
+        function clearErrors() {
             loginMessage.textContent = '';
             emailError.textContent = '';
             passwordError.textContent = '';
@@ -364,50 +364,49 @@
             passwordInput.classList.remove('input-error');
         }
 
-        function setFieldError(fieldInput, errorNode, message) {
-            fieldInput.classList.add('input-error');
+        // Show one validation error on an input.
+        function showError(input, errorNode, message) {
+            input.classList.add('input-error');
             errorNode.textContent = message;
         }
 
+        // Clear email error while typing.
         emailInput.addEventListener('input', function () {
             emailInput.classList.remove('input-error');
             emailError.textContent = '';
         });
 
+        // Clear password error while typing.
         passwordInput.addEventListener('input', function () {
             passwordInput.classList.remove('input-error');
             passwordError.textContent = '';
         });
 
+        // Handle login form submit.
         loginForm.addEventListener('submit', async function (event) {
             event.preventDefault();
-            clearFieldErrors();
+            clearErrors();
 
-            var hasError = false;
             var emailValue = emailInput.value.trim();
             var passwordValue = passwordInput.value;
 
             if (!emailValue) {
-                setFieldError(emailInput, emailError, 'Email is required.');
-                hasError = true;
-            } else if (!emailInput.validity.valid) {
-                setFieldError(emailInput, emailError, 'Please enter a valid email address.');
-                hasError = true;
+                showError(emailInput, emailError, 'Email is required.');
+                return;
+            }
+
+            if (!emailInput.validity.valid) {
+                showError(emailInput, emailError, 'Please enter a valid email address.');
+                return;
             }
 
             if (!passwordValue) {
-                setFieldError(passwordInput, passwordError, 'Password is required.');
-                hasError = true;
-            }
-
-            if (hasError) {
+                showError(passwordInput, passwordError, 'Password is required.');
                 return;
             }
 
             loginBtn.disabled = true;
             loginBtn.textContent = 'Signing in...';
-            AttendanceApi.showGlobalLoading('Signing you in...');
-            var redirecting = false;
 
             try {
                 var payload = {
@@ -415,36 +414,27 @@
                     password: document.getElementById('password').value
                 };
 
-                var user = await AttendanceApi.request('/api/auth/login', {
+                var user = await AttendanceApi.request('/api/login', {
                     method: 'POST',
                     body: JSON.stringify(payload)
                 });
 
                 AttendanceApi.setCurrentUser(user);
-                redirecting = true;
-                loginBtn.textContent = 'Opening dashboard...';
-                AttendanceApi.showGlobalLoading('Login successful. Loading dashboard...');
-                setTimeout(function () {
-                    window.location.href = 'dashboard.html';
-                }, 350);
+                window.location.href = 'dashboard.html';
             } catch (error) {
                 var loweredMessage = (error.message || '').toLowerCase();
                 if (loweredMessage.includes('invalid email or password')) {
-                    setFieldError(passwordInput, passwordError, error.message);
+                    showError(passwordInput, passwordError, error.message);
                 } else if (loweredMessage.includes('email') && !loweredMessage.includes('password')) {
-                    setFieldError(emailInput, emailError, error.message);
+                    showError(emailInput, emailError, error.message);
                 } else if (loweredMessage.includes('password') || loweredMessage.includes('invalid')) {
-                    setFieldError(passwordInput, passwordError, error.message);
+                    showError(passwordInput, passwordError, error.message);
                 } else {
                     loginMessage.textContent = error.message;
                 }
-                AttendanceApi.hideGlobalLoading();
             } finally {
-                if (!redirecting) {
-                    loginBtn.disabled = false;
-                    loginBtn.textContent = 'Login';
-                    AttendanceApi.hideGlobalLoading();
-                }
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Login';
             }
         });
     </script>
