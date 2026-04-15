@@ -1,0 +1,421 @@
+*,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        :root {
+            --bg: #f2f1ef;
+            --surface: #ffffff;
+            --surface-2: #f7f6f4;
+            --border: #e8e6e2;
+            --ink: #1c1b19;
+            --ink-2: #6b6861;
+            --ink-3: #b0ada8;
+            --dark: #16151a;
+            --r: 14px
+        }
+
+        html,
+        body {
+            height: 100%;
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg);
+            color: var(--ink);
+            font-size: 15px;
+            line-height: 1.5
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit
+        }
+
+        .shell {
+            display: grid;
+            grid-template-columns: 272px 1fr;
+            height: 100vh;
+            overflow: hidden
+        }
+
+        .sidebar {
+            background: #16151a;
+            display: flex;
+            flex-direction: column;
+            padding: 16px 14px;
+            position: relative;
+            margin: 12px 0 12px 12px;
+            border-radius: 20px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, .35), 0 8px 20px rgba(0, 0, 0, .2);
+            height: calc(100vh - 24px)
+        }
+
+        .sidebar::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 20px;
+            pointer-events: none;
+            background-image: radial-gradient(circle, rgba(255, 255, 255, .03) 1px, transparent 1px);
+            background-size: 18px 18px
+        }
+
+        .sidebar>* {
+            position: relative;
+            z-index: 1
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+            padding: 6px 8px
+        }
+
+        .brand-icon {
+            width: 34px;
+            height: 34px;
+            background: rgba(255, 255, 255, .12);
+            border-radius: 10px;
+            display: grid;
+            place-items: center;
+            border: 1px solid rgba(255, 255, 255, .08)
+        }
+
+        .brand-icon svg {
+            width: 16px;
+            height: 16px;
+            fill: #fff
+        }
+
+        .brand-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff
+        }
+
+        .brand-sub {
+            font-size: 11px;
+            color: rgba(255, 255, 255, .35)
+        }
+
+        .nav-label {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, .25);
+            padding: 0 10px;
+            margin-bottom: 6px
+        }
+
+        nav {
+            display: flex;
+            flex-direction: column;
+            gap: 2px
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-size: 13.5px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, .45);
+            transition: .18s
+        }
+
+        .nav-item svg {
+            width: 16px;
+            height: 16px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 1.7
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, .07);
+            color: rgba(255, 255, 255, .85)
+        }
+
+        .nav-item.active {
+            background: rgba(255, 255, 255, .11);
+            color: #fff;
+            font-weight: 600
+        }
+
+        .sp {
+            flex: 1
+        }
+
+        .user-card {
+            background: rgba(255, 255, 255, .06);
+            border: 1px solid rgba(255, 255, 255, .08);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .15);
+            display: grid;
+            place-items: center;
+            color: #fff
+        }
+
+        .avatar svg {
+            width: 18px;
+            height: 18px;
+            stroke: #fff;
+            fill: none;
+            stroke-width: 1.8
+        }
+
+        .user-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff
+        }
+
+        .user-role {
+            font-size: 11px;
+            color: rgba(255, 255, 255, .35)
+        }
+
+        .sidebar-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 6px
+        }
+
+        .s-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-align: center;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, .45);
+            border: 1px solid rgba(255, 255, 255, .1)
+        }
+
+        .s-btn svg {
+            width: 14px;
+            height: 14px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 1.8;
+            flex-shrink: 0
+        }
+
+        .s-btn.logout {
+            background: rgba(255, 255, 255, .1);
+            color: #fff
+        }
+
+        .main {
+            overflow-y: auto;
+            padding: 36px 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px
+        }
+
+        .topbar {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between
+        }
+
+        .greeting-label {
+            font-size: 13px;
+            color: var(--ink-3);
+            margin-bottom: 6px
+        }
+
+        .greeting-name {
+            font-weight: 700;
+            font-size: 42px;
+            line-height: 1;
+            letter-spacing: -.5px
+        }
+
+        .sem-pill {
+            background: var(--ink);
+            color: #fff;
+            font-size: 12px;
+            padding: 6px 14px;
+            border-radius: 20px
+        }
+
+        .form-layout {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 16px
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+            padding: 22px
+        }
+
+        .card-title {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: .7px;
+            text-transform: uppercase;
+            color: var(--ink-3);
+            margin-bottom: 16px
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px
+        }
+
+        .full {
+            grid-column: 1/-1
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--ink-2);
+            margin-bottom: 6px
+        }
+
+        input,
+        select {
+            width: 100%;
+            height: 44px;
+            border: 1.5px solid var(--border);
+            border-radius: 11px;
+            background: var(--surface-2);
+            padding: 0 14px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            outline: none
+        }
+
+        input:focus,
+        select:focus {
+            border-color: var(--ink);
+            background: var(--surface);
+            box-shadow: 0 0 0 4px rgba(28, 27, 25, .07)
+        }
+
+        .btn {
+            height: 44px;
+            padding: 0 18px;
+            border: none;
+            border-radius: 11px;
+            background: var(--ink);
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 6px
+        }
+
+        .record-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px
+        }
+
+        .record-list li {
+            border: 1px solid var(--border);
+            background: var(--surface-2);
+            border-radius: 10px;
+            padding: 10px 12px
+        }
+
+        .record-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--ink-2)
+        }
+
+        .record-course {
+            margin-top: 3px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--ink)
+        }
+
+        .record-meta {
+            margin-top: 2px;
+            font-size: 12px;
+            color: var(--ink-2)
+        }
+
+        .mini {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 16px
+        }
+
+        .status-list,
+        .tips-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px
+        }
+
+        .status-list li,
+        .tips-list li {
+            border: 1px solid var(--border);
+            background: var(--surface-2);
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 13px;
+            color: var(--ink-2)
+        }
+
+        .status-list strong,
+        .tips-list strong {
+            color: var(--ink)
+        }
+
+        @media(max-width:980px) {
+            .shell {
+                grid-template-columns: 1fr;
+                height: auto
+            }
+
+            .sidebar {
+                height: auto
+            }
+
+            .main {
+                padding: 24px 18px
+            }
+
+            .form-layout,
+            .mini,
+            .form-grid {
+                grid-template-columns: 1fr
+            }
+        }

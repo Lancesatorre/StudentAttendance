@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Attendance Hub - Contact</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+        <link rel="stylesheet" href="css/contact.css" />
+</head>
+
+<body>
+    <div class="wrap">
+        <header class="topbar">
+            <div class="brand">
+                <img class="logo" src="image/ceclogo.jpg" alt="Cebu Eastern College logo" />
+                <div>
+                    <div class="brand-main">Cebu Eastern College</div>
+                    <div class="brand-sub">Attendance Hub</div>
+                </div>
+            </div>
+            <nav class="nav" aria-label="Main navigation">
+                <a href="index.html">Home</a>
+                <a href="about.html">About</a>
+                <a class="active" href="contact.html">Contact</a>
+            </nav>
+            <div class="top-actions">
+                <button class="mini-btn ghost" id="navLogin">Login</button>
+                <button class="mini-btn solid" id="navRegister">Register</button>
+            </div>
+        </header>
+
+        <main class="main">
+            <section class="pane">
+                <div class="kicker">Contact Us</div>
+                <h1>Need help with your attendance records?</h1>
+                <p>Reach our student support team for account assistance, attendance corrections, or portal access
+                    concerns.</p>
+                <ul>
+                    <li>Email: attendancehub@cebu-eastern.edu.ph</li>
+                    <li>Phone: +63 (32) 234 5678</li>
+                    <li>Office: Student Affairs, Cebu Eastern College Campus</li>
+                    <li>Hours: Monday to Friday, 8:00 AM - 5:00 PM</li>
+                </ul>
+            </section>
+
+            <section class="pane">
+                <div class="kicker">Sample Form</div>
+                <label class="field">Full Name
+                    <input type="text" placeholder="Your full name" />
+                </label>
+                <label class="field">School Email
+                    <input type="email" placeholder="name@school.edu" />
+                </label>
+                <label class="field">Message
+                    <textarea placeholder="Example: I need help updating my attendance for IT-301."></textarea>
+                </label>
+                <button class="btn" type="button">Send Message</button>
+                <div class="note">This is an example contact page UI for your project.</div>
+            </section>
+        </main>
+
+        <footer class="foot">&copy; 2026 Cebu Eastern College - Attendance Hub</footer>
+    </div>
+
+    <script>
+        document.getElementById('navLogin').addEventListener('click', function () { window.location.href = 'login.html'; });
+        document.getElementById('navRegister').addEventListener('click', function () { window.location.href = 'register.html'; });
+    </script>
+</body>
+
+</html>

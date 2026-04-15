@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Attendance Hub - New Attendance</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+        <link rel="stylesheet" href="css/new-attendance.css" />
+</head>
+
+<body>
+    <div class="shell">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-icon"><svg viewBox="0 0 18 18">
+                        <rect x="1" y="1" width="7" height="7" rx="1.5" />
+                        <rect x="10" y="1" width="7" height="7" rx="1.5" />
+                        <rect x="1" y="10" width="7" height="7" rx="1.5" />
+                        <rect x="10" y="10" width="7" height="7" rx="1.5" />
+                    </svg></div>
+                <div>
+                    <div class="brand-name">Attendance Hub</div>
+                    <div class="brand-sub">Student Portal</div>
+                </div>
+            </div>
+            <div class="nav-label">Menu</div>
+            <nav>
+                <a class="nav-item" href="dashboard.html"><svg viewBox="0 0 24 24">
+                        <rect x="3" y="3" width="7" height="7" rx="1" />
+                        <rect x="14" y="3" width="7" height="7" rx="1" />
+                        <rect x="3" y="14" width="7" height="7" rx="1" />
+                        <rect x="14" y="14" width="7" height="7" rx="1" />
+                    </svg>Dashboard</a>
+                <a class="nav-item active" href="new-attendance.html"><svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="9" />
+                        <line x1="12" y1="8" x2="12" y2="16" />
+                        <line x1="8" y1="12" x2="16" y2="12" />
+                    </svg>New Attendance</a>
+                <a class="nav-item" href="attendance-record.html"><svg viewBox="0 0 24 24">
+                        <rect x="3" y="3" width="18" height="18" rx="2" />
+                        <line x1="7" y1="8" x2="17" y2="8" />
+                        <line x1="7" y1="12" x2="17" y2="12" />
+                        <line x1="7" y1="16" x2="13" y2="16" />
+                    </svg>Records</a>
+            </nav>
+            <div class="sp"></div>
+            <div class="user-card">
+                <div class="avatar"><svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="8" r="3.5" />
+                        <path d="M5.5 19.5c1.5-3.2 4-4.8 6.5-4.8s5 1.6 6.5 4.8" />
+                    </svg></div>
+                <div>
+                    <div class="user-name" id="sidebarUserName">Student Name</div>
+                    <div class="user-role" id="sidebarUserRole">Course — Year</div>
+                </div>
+            </div>
+            <div class="sidebar-actions"><a class="s-btn logout" id="logoutBtn" href="login.html"><svg
+                        viewBox="0 0 24 24">
+                        <path d="M10 7H7a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h3" />
+                        <path d="M14 16l4-4-4-4" />
+                        <path d="M18 12h-8" />
+                    </svg>Log out</a></div>
+        </aside>
+
+        <main class="main">
+            <header class="topbar">
+                <div>
+                    <div class="greeting-label">Secure Form</div>
+                    <h1 class="greeting-name">New Attendance</h1>
+                </div>
+                <span class="sem-pill">Session Entry</span>
+            </header>
+
+            <section class="form-layout">
+                <article class="card">
+                    <div class="card-title">Fill attendance details</div>
+                    <form id="attendanceForm">
+                        <div class="form-grid">
+                            <div class="full"><label>Student Name</label><input id="studentName" type="text"
+                                    placeholder="Full name" required /></div>
+                            <div class="full"><label>ID Number</label><input id="studentId" type="text"
+                                    placeholder="2026-00045" required /></div>
+                            <div><label>Date</label><input id="entryDate" type="date" required /></div>
+                            <div><label>Role</label><select id="role">
+                                    <option>Student</option>
+                                    <option>Class Representative</option>
+                                </select></div>
+                            <div><label>Time-In</label><input id="timeIn" type="time" required /></div>
+                            <div><label>Time-Out</label><input id="timeOut" type="time" required /></div>
+                            <div class="full"><label>Department / Course</label><select id="course">
+                                    <option>BS Computer Science</option>
+                                    <option>BS Information Technology</option>
+                                </select></div>
+                            <div><label>Subject Code</label><input id="subjectCode" type="text" placeholder="CS-301"
+                                    required /></div>
+                            <div><label>Section</label><input id="section" type="text" placeholder="3A" required />
+                            </div>
+                        </div>
+                        <button class="btn" id="submitBtn" type="submit">Submit Attendance</button>
+                    </form>
+                    <p id="submitMessage" style="margin-top:10px;font-size:13px;color:var(--ink-2)"></p>
+                </article>
+
+                <aside class="card">
+                    <div class="card-title">Recent records</div>
+                    <ul class="record-list" id="recentList">
+                        <li>Loading records...</li>
+                    </ul>
+                </aside>
+            </section>
+
+            <section class="mini">
+                <article class="card">
+                    <div class="card-title">Status</div>
+                    <ul class="status-list">
+                        <li><strong>Current Semester:</strong> 2nd Semester AY 2025-2026</li>
+                        <li><strong>Attendance Today:</strong> <span id="attendanceTodayValue">0 submitted
+                                records</span></li>
+                        <li><strong>Weekly Standing:</strong> 96% on-time attendance</li>
+                    </ul>
+                </article>
+                <article class="card">
+                    <div class="card-title">Tips</div>
+                    <ul class="tips-list">
+                        <li><strong>Double-check time:</strong> verify Time-In and Time-Out before submitting.</li>
+                        <li><strong>Use subject code format:</strong> example CS-301 or IT-220 for consistency.</li>
+                        <li><strong>Submit early:</strong> log attendance within the first 10 minutes of class.</li>
+                    </ul>
+                </article>
+            </section>
+        </main>
+    </div>
+
+    <script src="app-client.js"></script>
+    <script>
+        var currentUser = AttendanceApi.requireUser('login.html');
+
+        var sidebarUserName = document.getElementById('sidebarUserName');
+        var sidebarUserRole = document.getElementById('sidebarUserRole');
+        var studentNameInput = document.getElementById('studentName');
+        var studentIdInput = document.getElementById('studentId');
+        var courseSelect = document.getElementById('course');
+        var roleInput = document.getElementById('role');
+        var entryDateInput = document.getElementById('entryDate');
+        var timeInInput = document.getElementById('timeIn');
+        var timeOutInput = document.getElementById('timeOut');
+        var subjectCodeInput = document.getElementById('subjectCode');
+        var sectionInput = document.getElementById('section');
+        var recentList = document.getElementById('recentList');
+        var attendanceTodayValue = document.getElementById('attendanceTodayValue');
+        var attendanceForm = document.getElementById('attendanceForm');
+        var submitBtn = document.getElementById('submitBtn');
+        var submitMessage = document.getElementById('submitMessage');
+
+        // Show current user details in sidebar and prefill form fields.
+        function showCurrentUser() {
+            if (!currentUser) {
+                return;
+            }
+
+            sidebarUserName.textContent = currentUser.fullName;
+            sidebarUserRole.textContent = currentUser.course + ' — ' + currentUser.yearLevel;
+            studentNameInput.value = currentUser.fullName;
+            studentIdInput.value = currentUser.studentId;
+
+            var hasCourse = false;
+            for (var i = 0; i < courseSelect.options.length; i++) {
+                if (courseSelect.options[i].value === currentUser.course) {
+                    hasCourse = true;
+                    break;
+                }
+            }
+
+            if (hasCourse === false) {
+                var option = document.createElement('option');
+                option.value = currentUser.course;
+                option.textContent = currentUser.course;
+                courseSelect.appendChild(option);
+            }
+
+            courseSelect.value = currentUser.course;
+        }
+
+        // Ask confirmation and log out user.
+        async function onLogout(event) {
+            event.preventDefault();
+            var shouldLogout = await AttendanceApi.confirmLogout();
+            if (!shouldLogout) {
+                return;
+            }
+
+            AttendanceApi.clearCurrentUser();
+            window.location.href = 'login.html';
+        }
+
+        // Set the date input to today.
+        function setTodayDate() {
+            entryDateInput.valueAsDate = new Date();
+        }
+
+        // Format date text for the recent records list.
+        function formatDateLabel(dateText) {
+            var date = new Date(dateText + 'T00:00:00');
+            if (Number.isNaN(date.getTime())) {
+                return dateText;
+            }
+
+            return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        // Update today's attendance count text.
+        function updateAttendanceTodayText(records) {
+            var todayCount = 0;
+            var todayText = new Date().toISOString().slice(0, 10);
+
+            for (var i = 0; i < records.length; i++) {
+                var record = records[i];
+                if (record.date === todayText) {
+                    todayCount++;
+                }
+            }
+
+            attendanceTodayValue.textContent = todayCount + (todayCount === 1 ? ' submitted record' : ' submitted records');
+        }
+
+        // Show up to 5 recent attendance records.
+        function renderRecent(records) {
+            var html = '';
+
+            updateAttendanceTodayText(records);
+
+            if (!records.length) {
+                recentList.innerHTML = '<li>No attendance records yet.</li>';
+                return;
+            }
+
+            var maxCount = records.length;
+            if (maxCount > 5) {
+                maxCount = 5;
+            }
+
+            for (var j = 0; j < maxCount; j++) {
+                var recent = records[j];
+                html += '<li>' +
+                    '<div class="record-top"><span>' + formatDateLabel(recent.date) + '</span><span>' + recent.timeIn + ' - ' + recent.timeOut + '</span></div>' +
+                    '<div class="record-course">' + recent.subjectCode + '</div>' +
+                    '<div class="record-meta">Section ' + recent.section + ' • ' + recent.status + '</div>' +
+                    '</li>';
+            }
+
+            recentList.innerHTML = html;
+        }
+
+        // Load recent records from the API.
+        async function loadRecentRecords() {
+            if (!currentUser) {
+                return;
+            }
+
+            try {
+                var records = await AttendanceApi.request('/api/attendance?userId=' + encodeURIComponent(currentUser.userId));
+                renderRecent(records);
+            } catch (error) {
+                recentList.innerHTML = '<li>' + error.message + '</li>';
+            }
+        }
+
+        // Build the request body for creating attendance.
+        function buildAttendancePayload() {
+            return {
+                userId: currentUser.userId,
+                studentName: studentNameInput.value,
+                studentId: studentIdInput.value,
+                date: entryDateInput.value,
+                role: roleInput.value,
+                timeIn: timeInInput.value,
+                timeOut: timeOutInput.value,
+                course: courseSelect.value,
+                subjectCode: subjectCodeInput.value,
+                section: sectionInput.value
+            };
+        }
+
+        // Handle submit button click and save attendance.
+        async function onSubmitAttendance(event) {
+            event.preventDefault();
+            if (!currentUser) {
+                return;
+            }
+
+            submitMessage.textContent = '';
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+
+            try {
+                var payload = buildAttendancePayload();
+
+                await AttendanceApi.request('/api/attendance', {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+
+                submitMessage.textContent = 'Attendance saved successfully.';
+                attendanceForm.reset();
+                setTodayDate();
+                studentNameInput.value = currentUser.fullName;
+                studentIdInput.value = currentUser.studentId;
+                courseSelect.value = currentUser.course;
+                await loadRecentRecords();
+            } catch (error) {
+                submitMessage.textContent = error.message;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Attendance';
+            }
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', onLogout);
+        attendanceForm.addEventListener('submit', onSubmitAttendance);
+
+        showCurrentUser();
+        setTodayDate();
+        loadRecentRecords();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Attendance Hub - Landing</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+        <link rel="stylesheet" href="css/index.css" />
+</head>
+
+<body>
+    <div class="wrap">
+        <header class="topbar">
+            <div class="brand">
+                <img class="logo" src="image/ceclogo.jpg" alt="Cebu Eastern College logo" />
+                <div>
+                    <div class="brand-main">Cebu Eastern College</div>
+                    <div class="brand-sub">Attendance Hub</div>
+                </div>
+            </div>
+            <nav class="nav" aria-label="Main navigation">
+                <a class="active" href="index.html">Home</a>
+                <a href="about.html">About</a>
+                <a href="contact.html">Contact</a>
+            </nav>
+            <div class="top-actions">
+                <button class="mini-btn ghost" id="navLogin">Login</button>
+                <button class="mini-btn solid" id="navRegister">Register</button>
+            </div>
+        </header>
+
+        <main class="hero">
+            <section class="left">
+                <div class="left-content">
+                    <span class="kicker">Student Attendance Platform</span>
+                    <h1>Secure, Simple,<br>Smart Attendance<br>Management.</h1>
+                    <p id="about">Track and verify student attendance in seconds with one clean portal designed for Cebu
+                        Eastern College students and instructors. Log attendance, review records, and monitor
+                        performance
+                        with an interface built for clarity.</p>
+                    <div class="buttons">
+                        <button class="btn btn-dark" id="goLoginA">Register Now</button>
+                        <button class="btn btn-light" id="goLoginB">Login</button>
+                    </div>
+                </div>
+                <div class="left-logo"><img src="image/ceclogo.jpg" alt="CEC logo" /></div>
+            </section>
+        </main>
+
+        <footer class="foot" id="contact">&copy; 2026 Cebu Eastern College - Attendance Hub</footer>
+    </div>
+
+    <script>
+        document.getElementById('navLogin').addEventListener('click', function () { window.location.href = 'login.html'; });
+        document.getElementById('navRegister').addEventListener('click', function () { window.location.href = 'register.html'; });
+        document.getElementById('goLoginA').addEventListener('click', function () { window.location.href = 'register.html'; });
+        document.getElementById('goLoginB').addEventListener('click', function () { window.location.href = 'login.html'; });
+    </script>
+</body>
+
+</html>

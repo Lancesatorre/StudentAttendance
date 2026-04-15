@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Attendance Hub - Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+        <link rel="stylesheet" href="css/login.css" />
+</head>
+
+<body>
+    <div class="wrap">
+        <div class="card">
+            <section class="left">
+                <div>
+                    <div class="avatar"><img src="image/ceclogo.jpg" alt="Cebu Eastern College Logo" /></div>
+                    <div class="title">Cebu Eastern College</div>
+                    <div class="sub">Attendance Hub - Student Portal</div>
+                    <div class="bars">
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                    </div>
+                </div>
+                <div class="chip">Secure sign-in active - Campus network verified</div>
+            </section>
+
+            <section class="right">
+                <a class="back-home" href="index.html">&larr; Back to Home</a>
+                <h1>Welcome back</h1>
+                <p>Sign in to continue to your attendance dashboard.</p>
+                <form id="loginForm" novalidate>
+                    <div class="field"><label>Email</label><input id="email" type="email" placeholder="Email"
+                            required />
+                        <div class="field-error" id="emailError"></div>
+                    </div>
+                    <div class="field"><label>Password</label><input id="password" type="password"
+                            placeholder="********" required />
+                        <div class="field-error" id="passwordError"></div>
+                    </div>
+                    <div class="row"><span class="forgot">Forgot password?</span></div>
+                    <button class="btn" id="loginBtn" type="submit">Login</button>
+                </form>
+                <div class="signup" id="loginMessage"></div>
+                <div class="signup">Don't have an account? <a href="register.html"><b>Sign up</b></a></div>
+            </section>
+        </div>
+    </div>
+
+    <script src="app-client.js"></script>
+    <script>
+        // If user is already logged in, go directly to dashboard.
+        var currentUser = AttendanceApi.getCurrentUser();
+        if (currentUser && currentUser.userId) {
+            window.location.href = 'dashboard.html';
+        }
+
+        var loginForm = document.getElementById('loginForm');
+        var loginBtn = document.getElementById('loginBtn');
+        var loginMessage = document.getElementById('loginMessage');
+        var emailInput = document.getElementById('email');
+        var passwordInput = document.getElementById('password');
+        var emailError = document.getElementById('emailError');
+        var passwordError = document.getElementById('passwordError');
+
+        // Clear all error messages and red borders.
+        function clearErrors() {
+            loginMessage.textContent = '';
+            emailError.textContent = '';
+            passwordError.textContent = '';
+            emailInput.classList.remove('input-error');
+            passwordInput.classList.remove('input-error');
+        }
+
+        // Show one validation error on an input.
+        function showError(input, errorNode, message) {
+            input.classList.add('input-error');
+            errorNode.textContent = message;
+        }
+
+        // Clear email error while typing.
+        emailInput.addEventListener('input', function () {
+            emailInput.classList.remove('input-error');
+            emailError.textContent = '';
+        });
+
+        // Clear password error while typing.
+        passwordInput.addEventListener('input', function () {
+            passwordInput.classList.remove('input-error');
+            passwordError.textContent = '';
+        });
+
+        // Handle login form submit.
+        loginForm.addEventListener('submit', async function (event) {
+            event.preventDefault();
+            clearErrors();
+
+            var emailValue = emailInput.value.trim();
+            var passwordValue = passwordInput.value;
+
+            if (!emailValue) {
+                showError(emailInput, emailError, 'Email is required.');
+                return;
+            }
+
+            if (!emailInput.validity.valid) {
+                showError(emailInput, emailError, 'Please enter a valid email address.');
+                return;
+            }
+
+            if (!passwordValue) {
+                showError(passwordInput, passwordError, 'Password is required.');
+                return;
+            }
+
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Signing in...';
+
+            try {
+                var payload = {
+                    email: document.getElementById('email').value,
+                    password: document.getElementById('password').value
+                };
+
+                var user = await AttendanceApi.request('/api/login', {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+
+                AttendanceApi.setCurrentUser(user);
+                window.location.href = 'dashboard.html';
+            } catch (error) {
+                var loweredMessage = (error.message || '').toLowerCase();
+                if (loweredMessage.includes('invalid email or password')) {
+                    showError(passwordInput, passwordError, error.message);
+                } else if (loweredMessage.includes('email') && !loweredMessage.includes('password')) {
+                    showError(emailInput, emailError, error.message);
+                } else if (loweredMessage.includes('password') || loweredMessage.includes('invalid')) {
+                    showError(passwordInput, passwordError, error.message);
+                } else {
+                    loginMessage.textContent = error.message;
+                }
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Login';
+            }
+        });
+    </script>
+</body>
+
+</html>

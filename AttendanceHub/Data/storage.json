@@ -1,0 +1,71 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "fullName": "Lance Timothy Satorre",
+      "studentId": "12312312",
+      "yearLevel": "Year 1",
+      "course": "BS Information Technology",
+      "email": "lanceerrotas@gmail.com",
+      "password": "123123",
+      "createdAtUtc": "2026-04-15T15:42:41.1783292Z"
+    },
+    {
+      "id": "2",
+      "fullName": "Anthony Putol",
+      "studentId": "2026-2143",
+      "yearLevel": "Year 1",
+      "course": "BS Information Technology",
+      "email": "putol@gmail.com",
+      "password": "123123",
+      "createdAtUtc": "2026-04-15T15:53:18.3631300Z"
+    }
+  ],
+  "attendance": [
+    {
+      "id": "1",
+      "userId": "1",
+      "studentName": "Lance Timothy Satorre",
+      "studentId": "12312312",
+      "date": "2026-04-15",
+      "role": "Student",
+      "timeIn": "13:00",
+      "timeOut": "14:00",
+      "course": "BS Computer Science",
+      "subjectCode": "CS-301",
+      "section": "123",
+      "status": "Late",
+      "createdAtUtc": "2026-04-15T15:43:03.8451150Z"
+    },
+    {
+      "id": "2",
+      "userId": "2",
+      "studentName": "Anthony Putol",
+      "studentId": "2026-2143",
+      "date": "2026-04-16",
+      "role": "Student",
+      "timeIn": "10:00",
+      "timeOut": "11:00",
+      "course": "BS Information Technology",
+      "subjectCode": "IT-301",
+      "section": "3B",
+      "status": "Late",
+      "createdAtUtc": "2026-04-15T15:53:56.2867040Z"
+    },
+    {
+      "id": "3",
+      "userId": "2",
+      "studentName": "Anthony Putol",
+      "studentId": "2026-2143",
+      "date": "2026-04-16",
+      "role": "Student",
+      "timeIn": "14:00",
+      "timeOut": "15:00",
+      "course": "BS Information Technology",
+      "subjectCode": "CS-301",
+      "section": "3b",
+      "status": "Present",
+      "createdAtUtc": "2026-04-15T15:59:24.2461164Z"
+    }
+  ]
+}

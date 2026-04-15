@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Attendance Hub - About</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+        <link rel="stylesheet" href="css/about.css" />
+</head>
+
+<body>
+    <div class="wrap">
+        <header class="topbar">
+            <div class="brand">
+                <img class="logo" src="image/ceclogo.jpg" alt="Cebu Eastern College logo" />
+                <div>
+                    <div class="brand-main">Cebu Eastern College</div>
+                    <div class="brand-sub">Attendance Hub</div>
+                </div>
+            </div>
+            <nav class="nav" aria-label="Main navigation">
+                <a href="index.html">Home</a>
+                <a class="active" href="about.html">About</a>
+                <a href="contact.html">Contact</a>
+            </nav>
+            <div class="top-actions">
+                <button class="mini-btn ghost" id="navLogin">Login</button>
+                <button class="mini-btn solid" id="navRegister">Register</button>
+            </div>
+        </header>
+
+        <main class="main">
+            <div class="kicker">About Attendance Hub</div>
+            <h1>Built for reliable and simple student attendance tracking.</h1>
+            <p class="lead">Attendance Hub is a student-focused platform for Cebu Eastern College that helps classes log
+                attendance quickly, monitor records clearly, and reduce manual paperwork for both instructors and
+                students.</p>
+
+            <section class="grid">
+                <article class="card">
+                    <h2>What the system does</h2>
+                    <ul>
+                        <li>Registers student accounts securely.</li>
+                        <li>Logs class attendance with course, section, and schedule details.</li>
+                        <li>Shows dashboard summaries and per-subject attendance rates.</li>
+                        <li>Stores records in a backend JSON database for persistence.</li>
+                    </ul>
+                </article>
+                <article class="card">
+                    <h2>Why this helps</h2>
+                    <p>Faculty and students can immediately access updated attendance status without manually compiling
+                        spreadsheets. It supports faster follow-up, better visibility, and cleaner student records.</p>
+                </article>
+            </section>
+        </main>
+
+        <footer class="foot">&copy; 2026 Cebu Eastern College - Attendance Hub</footer>
+    </div>
+
+    <script>
+        document.getElementById('navLogin').addEventListener('click', function () { window.location.href = 'login.html'; });
+        document.getElementById('navRegister').addEventListener('click', function () { window.location.href = 'register.html'; });
+    </script>
+</body>
+
+</html>
